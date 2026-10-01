@@ -1,0 +1,9 @@
+title: Course Print P0 Export
+version: 0.0.1
+quarto-required: ">=1.11.5"
+contributes:
+  metadata:
+    course-print-p0:
+      package-contract: p0-native-ast-v1
+      entrypoint: entrypoints/export.ts
+      activation: explicit-script-only
