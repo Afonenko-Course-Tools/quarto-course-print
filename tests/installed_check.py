@@ -29,6 +29,13 @@ def tree(root):
     return result
 
 
+def isolated_command(command, env):
+    # Reset sudo environment from the selected UID passwd entry before explicit tool paths.
+    return ['sudo', 'unshare', '--net', '--', 'setpriv', f'--reuid={os.getuid()}',
+            f'--regid={os.getgid()}', '--clear-groups', '--reset-env', 'env', f'PATH={env["PATH"]}',
+            f'DENO_DIR={env["DENO_DIR"]}', 'DENO_NO_UPDATE_CHECK=1', *command]
+
+
 def check(repo, package):
     with tempfile.TemporaryDirectory(prefix='print-installed-') as directory:
         stage = Path(directory).resolve()
@@ -53,10 +60,7 @@ def check(repo, package):
                '--allow-run=quarto', '--allow-env', str(installed/'entrypoints/export.ts'),
                'package.json', 'course-a/sec-work-one', 'output', 'header.json', 'context.json']
         if os.environ.get('PRINT_REQUIRE_NETWORK_ISOLATION') == '1':
-            # Linux CI: children inherit an empty network namespace, then drop root.
-            cmd = ['sudo', 'unshare', '--net', '--', 'setpriv', f'--reuid={os.getuid()}',
-                   f'--regid={os.getgid()}', '--clear-groups', 'env', f'PATH={env["PATH"]}',
-                   f'DENO_DIR={env["DENO_DIR"]}', 'DENO_NO_UPDATE_CHECK=1', *cmd]
+            cmd = isolated_command(cmd, env)
         result = json.loads(run(cmd, cwd=consumer, env=env))
         assert result['status'] == 'built' and result['engineCalls'] == 2 and not result['reusable']
         text = run(['pdftotext', str(consumer/'output/handout.pdf'), '-'])
