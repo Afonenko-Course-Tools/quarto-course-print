@@ -1,0 +1,43 @@
+{
+  "packages": [
+    {
+      "name": "pandoc-templates",
+      "version": "3.10",
+      "source": "https://github.com/jgm/pandoc-templates",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "DejaVu fonts",
+      "version": "2.35",
+      "source": "https://dejavu-fonts.github.io/",
+      "license": "Bitstream Vera; DejaVu changes public domain",
+      "distribution": "Unmodified DejaVu fonts bundled with Matplotlib; fonts/ttf/LICENSE_DEJAVU retained"
+    },
+    {
+      "name": "Latin Modern Math",
+      "version": "1.959",
+      "source": "https://www.gust.org.pl/projects/e-foundry/lm-math",
+      "license": "GUST Font License / LPPL-1.3c-or-later"
+    }
+  ],
+  "files": {
+    "default.typst": "8afe46ca5028c5e51d77bdcb123487fdb3169498df6d232fa4828c9b716c31aa",
+    "fonts/DejaVuSans-Bold.ttf": "b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167",
+    "fonts/DejaVuSans-BoldOblique.ttf": "6edf0283160186af451cbee71e7b845f2e4cabf264bb992ce668c83c25465e6f",
+    "fonts/DejaVuSans-Oblique.ttf": "ccdf74b350f11fd3dd5774de50e5e6346a1a5da1f5b7d5fb83590665e97a5213",
+    "fonts/DejaVuSans.ttf": "3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22",
+    "fonts/DejaVuSansMono-Bold.ttf": "baada9a5172fe20886251aff0433fc38461912d5daf07287e7bee56620a8da96",
+    "fonts/DejaVuSansMono-BoldOblique.ttf": "a69081c15c76c827e0a27a5a7f5c74b6135c843499955495ffa8c20d3a98288b",
+    "fonts/DejaVuSansMono-Oblique.ttf": "28052813f7a709fc89f52d192dc995ef4f0fdc5c3d7b73a49d6849b1916d0cd0",
+    "fonts/DejaVuSansMono.ttf": "602ec86b8948cfcd956482fe64f94c36c867770149ef2f791d4613f443bcecb3",
+    "fonts/latinmodern-math.otf": "6075562b771f8b82f0c179e363389684f2dd09de30038269e2628e504bd7be0f",
+    "licenses/DejaVu-COPYRIGHT.txt": "d75938dec098f06f0ac3c00853065d94f020be1c3c62ef1dc2975ba15b4d9b0e",
+    "licenses/GUST-FONT-LICENSE.txt": "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73",
+    "licenses/LPPL-1.3c.tex": "c3c7c49085d4c8d722ca98937b2378619b45dd0b5bd1456bcd61be95d8b954f1",
+    "licenses/Latin-Modern-COPYRIGHT.txt": "5e385a99d447892ae5e2010e60b3cd45fe395d4fc93394b643f1b5591b53fd50",
+    "licenses/MANIFEST-Latin-Modern-Math.txt": "1daa729f7922c42ba5ce8da7dfe4ecdc9e5c878ad86217fd6f32c4671505b007",
+    "licenses/Pandoc-Templates-BSD-3-Clause.txt": "17da0258420c130844c7212e7e000ed5f67bc17d3b6f353fd8432d42cdc9e14f",
+    "licenses/README-Latin-Modern-Math.txt": "e6fdd5fb44b656146fa988d191f58901c09a347d3f4fbaa3b45b24a6ad7ec30b",
+    "template.typst": "1346afb9954496a1b95d5a08799567e0c75e360b0cb21ab2e4efc3d8a883bc14"
+  }
+}

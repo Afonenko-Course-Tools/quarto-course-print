@@ -59,7 +59,7 @@ Deno.test("isolated default Quarto Typst PDF needs no QMD source or web build", 
   const dir = await Deno.makeTempDir();
   try {
     const p = sample();
-    await renderPrint(p, p.works[0].key, dir, {});
+    await renderPrint(p, p.works[0].key, dir, {}, { upstreamCurrent: true });
     const pdf = await Deno.readFile(dir + "/handout.pdf");
     assert(new TextDecoder().decode(pdf.slice(0, 4)) === "%PDF");
     const o = await new Deno.Command("pdftotext", {
@@ -79,7 +79,7 @@ Deno.test("isolated default Quarto Typst PDF needs no QMD source or web build", 
 Deno.test("print retains mapped public file targets beside the PDF", async () => {
   const p = sample(), dir = await Deno.makeTempDir();
   try {
-    await renderPrint(p, p.works[0].key, dir, {});
+    await renderPrint(p, p.works[0].key, dir, {}, { upstreamCurrent: true });
     assert(
       (await Deno.readTextFile(dir + "/" + p.resources[0].target)).includes(
         "public data",
@@ -130,7 +130,7 @@ Deno.test("review: printed work copies exact native targets and excludes resourc
     c: [{ t: "Str", c: "resources/course-a/prose.txt" }],
   });
   try {
-    await renderPrint(p, p.works[0].key, dir, {});
+    await renderPrint(p, p.works[0].key, dir, {}, { upstreamCurrent: true });
     await Deno.stat(dir + "/resources/course-a/data.txt");
     for (const name of ["data", "prose.txt"]) {
       let missing = false;
@@ -158,7 +158,9 @@ Deno.test("review: print rejects aliases before creating output", async () => {
     try {
       let rejected = false;
       try {
-        await renderPrint(p, p.works[0].key, dir + "/out", {});
+        await renderPrint(p, p.works[0].key, dir + "/out", {}, {
+          upstreamCurrent: true,
+        });
       } catch (e) {
         rejected = String(e).includes("ADAPTER");
       }
@@ -173,5 +175,59 @@ Deno.test("review: print rejects aliases before creating output", async () => {
     } finally {
       await Deno.remove(dir, { recursive: true });
     }
+  }
+});
+Deno.test("installed font closure renders Cyrillic, bold, italic, code and math without system fonts", async () => {
+  const p = sample(), dir = await Deno.makeTempDir();
+  p.questions[0].condition = [
+    { t: "Para", c: [{ t: "Str", c: "Пример кириллицы: ёж, группа, ответ." }] },
+    {
+      t: "Para",
+      c: [{ t: "Strong", c: [{ t: "Str", c: "Полужирный текст" }] }, {
+        t: "Space",
+      }, { t: "Emph", c: [{ t: "Str", c: "Курсивный текст" }] }],
+    },
+    {
+      t: "CodeBlock",
+      c: [["", [], []], 'const ответ = 42;\nprint("Проверка кода")'],
+    },
+    {
+      t: "Para",
+      c: [{
+        t: "Math",
+        c: [
+          { t: "DisplayMath" },
+          "\\sum_{i=1}^{n} i^2 + \\frac{\\alpha}{2} = x^2",
+        ],
+      }],
+    },
+  ];
+  try {
+    await renderPrint(p, p.works[1].key, dir, {}, { upstreamCurrent: true });
+    const output = await new Deno.Command("pdftotext", {
+      args: [dir + "/handout.pdf", "-"],
+      stdout: "piped",
+    }).output();
+    const text = new TextDecoder().decode(output.stdout);
+    for (
+      const part of [
+        "Пример кириллицы",
+        "Полужирный текст",
+        "Курсивный текст",
+        "Проверка кода",
+      ]
+    ) assert(text.includes(part), part);
+    const fonts = await new Deno.Command("pdffonts", {
+      args: [dir + "/handout.pdf"],
+      stdout: "piped",
+    }).output();
+    assert(
+      new TextDecoder().decode(fonts.stdout).includes("DejaVuSans-Oblique"),
+      "emphasis lost italic font",
+    );
+    const capture = Deno.env.get("PRINT_GLYPH_PDF");
+    if (capture) await Deno.copyFile(dir + "/handout.pdf", capture);
+  } finally {
+    await Deno.remove(dir, { recursive: true });
   }
 });
