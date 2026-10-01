@@ -1,0 +1,53 @@
+name: Установленный Print P0
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: PDF и установленная копия (${{ matrix.quarto }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        quarto: [release, pre-release]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: print
+          persist-credentials: false
+      - name: Экспериментальный производитель тестового пакета Core
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Afonenko-Course-Tools/quarto-course
+          ref: 4f5caf9a15b9bd36476cad8a646e81521fbd29d1
+          path: core-fixture
+          persist-credentials: false
+      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
+        with:
+          version: ${{ matrix.quarto }}
+      - uses: cue-lang/setup-cue@b0e30e540a2dae47304ebf16586a5b2db023b61c # v2.0.0
+        with:
+          version: v0.17.1
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: v2.7.14
+      - name: Инструменты проверки PDF
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Нативный пакет, проверки адаптера и quarto add
+        working-directory: print
+        env:
+          CORE: ${{ github.workspace }}/core-fixture
+          PRINT_REQUIRE_NETWORK_ISOLATION: "1"
+        run: bash tools/check.sh

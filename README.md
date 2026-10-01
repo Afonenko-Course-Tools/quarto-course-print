@@ -1,10 +1,10 @@
 # Quarto Course Print — экспериментальный P0
 
-Узкий потребитель общего пакета `p0-native-ast-v1`, используемого также Moodle и пробой PrairieLearn. Он создаёт публичный бланк из нативных блоков Pandoc в изолированном стандартном проекте Quarto Typst. Исходный авторский QMD и веб-сборка потребителю не нужны. Преподавательский PDF не создаётся.
+Узкий потребитель общего пакета `p0-native-ast-v1`, используемого также Moodle и пробой PrairieLearn. Он создаёт публичный бланк из нативных блоков Pandoc в изолированном default staging. Документированные `quarto pandoc` и `quarto typst compile` используют установленный шаблон, partial и шрифты. Исходный авторский QMD и веб-сборка потребителю не нужны. Преподавательский PDF не создаётся.
 
 ## Получение общего входного пакета
 
-Для производителя нужны Quarto и CUE в PATH. Укажите в `CORE` распакованный исходный Core — каталог с `tests/probes/export-boundary`. Из каталога этого адаптера выполните:
+Для производителя нужны Quarto и CUE в PATH. Временный companion Core закреплён на `4f5caf9a15b9bd36476cad8a646e81521fbd29d1` из `Afonenko-Course-Tools/quarto-course`; текущая незамерженная ветка не используется. Получите отдельный чистый checkout этого SHA (или исходный архив этого commit), затем укажите его каталог в `CORE`. Из каталога адаптера:
 
 ```sh
 CORE=/absolute/path/to/extracted/core-source
@@ -19,18 +19,41 @@ deno run --allow-read --allow-write --allow-run --allow-env \
 
 ## Печать и проверка
 
-Проверены Deno **2.7.14**, Quarto **1.11.5**, Pandoc **3.10**, Typst **0.15.1**. Производитель использует CUE **0.17.1**. npm и сетевые импорты во время печати не нужны.
+Проверены Deno **2.7.14**, Quarto **1.10.18 / 1.11.5**, Pandoc **3.10**, Typst **0.15.1**. Производитель использует CUE **0.17.1**. npm и сетевые импорты во время печати не нужны.
 
 ```sh
+printf '%s\n' '{"date":"2026-10-01","group":"A"}' > header.json
+printf '%s\n' '{"upstreamCurrent":true}' > context.json
 deno run --allow-read --allow-write --allow-run --allow-env \
   _extensions/course-print/entrypoints/export.ts \
-  content-package.json course-a/sec-work-one output
+  content-package.json course-a/sec-work-one output header.json context.json
 P0_PACKAGE="$PWD/content-package.json" deno task test
 ```
 
-Необязательный четвёртый аргумент — JSON с полями `date` и `group`. Заголовок берётся из первого заголовка страницы работы; бланк содержит дату, группу, имя и публичные поля ответов. Тестам дополнительно нужен `pdftotext` из Poppler.
+Четвёртый аргумент — JSON шапки (`{}` или поля `date` и `group`), пятый — явное подтверждение вызывающей стороны `upstreamCurrent:true`: пакет прошёл актуальную проверку, нужные вычисления и разрешение конечных URL. Это доверенное утверждение, не способ обновить старый пакет. При неизвестной актуальности сначала нужен upstream refresh; без подтверждения печать отклоняется. Заголовок берётся из первого заголовка страницы работы; бланк содержит дату, группу, имя и публичные поля ответов. Тестам дополнительно нужны `pdftotext` и `pdffonts`, замеру — `pdfinfo` из Poppler.
 
-Результат: `output/handout.pdf`, `output/public.json` и выбранные публичные ресурсы рядом с PDF для локальных ссылок. Временный проект получает только публичные узлы и нужные файлы. Пустая техническая QMD-оболочка подключает валидированный JSON через Lua; это не авторский QMD и не повторный разбор Markdown-условий.
+Результат: `output/handout.pdf`, `output/public.json`, выбранные публичные ресурсы и служебный receipt `.course-print.json`. Каталог целиком принадлежит одной работе. В download выбирайте PDF и необходимые ресурсы; JSON/receipt не обязаны быть публичной загрузкой. JSON читается штатным Pandoc reader напрямую: авторский QMD, Lua-оболочка, book hooks и повторные вычисления не запускаются.
+
+Перед записью проверяются public projection, политика и hashes всех ресурсов пакета. Новый результат готовится целиком и заменяет принадлежащий цели каталог: устаревшие файлы не сохраняются. Чужой непустой каталог и symlink отклоняются. Если receipt отсутствует или не читается, принадлежность каталога нельзя подтвердить: непустой output отклоняется. Если owner/target читаются, но reusable fields повреждены, результат пересобирается. При ошибке старый результат не становится текущим; caller должен отметить preview устаревшим. Неудачная замена откатывается; если файловая система не позволила и откат, ошибка указывает сохранённый recovery-каталог. Это не crash-safe транзакция всего выпуска. После аварийного завершения процесса может потребоваться убрать его `.print-lock` вручную, убедившись, что процесс завершён.
+
+## Проверяемое повторное использование
+
+Без `toolchainIdentity` каждый вызов компилирует заново (`reusable:false`). Для reuse caller передаёт `toolchainIdentity`: 64 lowercase hex SHA-256 **действительно установленной immutable поставки Quarto/Pandoc/Typst**. Caller проверяет соответствие установки этому архиву; адаптер доверяет утверждению и не подменяет его строкой версии или собственным обходом частных каталогов Quarto. После изменения toolchain identity надо обновить. Не подставляйте произвольный hash ради hit.
+
+```ts
+import { renderPrint } from "./_extensions/course-print/application/export.ts";
+const result = await renderPrint(currentPackage, workKey, freshTarget, header, {
+  upstreamCurrent: true,
+  toolchainIdentity: verifiedDistributionSha256,
+  previous: previousOwnedTarget,
+});
+```
+
+`previous` необязателен: по умолчанию проверяется существующий целевой каталог. API возвращает `status` (`built`/`reused`), `reusable`, `fingerprint`, `engineCalls` и `timings` в миллисекундах. Hit копирует проверенные bytes в свежий candidate; вёрстка не запускается. Отпечаток включает публичный AST, выбранные Image/Link ресурсы, шапку, конечные URL, installed template/partial/fonts и toolchain identity. Ключ, решение, release ID и невыбранный материал не входят в render hash; актуальная проверка пакета всё равно обязательна.
+
+Typst `--deps --deps-format=json` проверяется после сборки. Depfile не перечисляет шрифты и linked attachments, поэтому они входят в явный индекс. Системные и embedded fonts отключены: установлены DejaVu 2.35 (Sans и Mono regular/bold/oblique/bold-oblique) и Latin Modern Math 1.959. Шаблоны Pandoc 3.10 и fonts имеют provenance, SHA и licenses в `assets/manifest.json` / `assets/licenses`. Неизвестный compiler input блокирует сборку; неизвестная upstream зависимость требует refresh, а не анализа QMD собственным parser. `assets` в API — необязательный каталог **доверенного полного recipe**, не произвольная настройка из авторского содержимого.
+
+Для нового выпуска coordinator передаёт только актуальные цели в свежий release staging. Удалённая цель и её ссылка туда не переносятся. Этот адаптер не ведёт глобальный registry и не координирует выпуск пяти книг.
 
 Для воспроизведения числового, составного и matching-бланка:
 
@@ -40,7 +63,7 @@ deno run --allow-read --allow-write --allow-run --allow-env \
   "$CORE/tests/probes/export-boundary/fixtures/answers.qmd" "$PWD/answer-package.json"
 deno run --allow-read --allow-write --allow-run --allow-env \
   _extensions/course-print/entrypoints/export.ts \
-  answer-package.json course-a/sec-work-answers answer-output
+  answer-package.json course-a/sec-work-answers answer-output header.json context.json
 ```
 
 | Возможность | Фактическая граница P0 |
@@ -67,4 +90,19 @@ quarto add /absolute/path/to/quarto-course-print --no-prompt
 
 Установленный entrypoint выполнен без node_modules и с запретом сети. Манифест описывает экспериментальный контракт; активация только явной командой, без автоматического производственного render-hook.
 
-Официальные источники проверены 2026-10-01: [Quarto Typst](https://quarto.org/docs/output-formats/typst.html), [Pandoc Lua filters](https://pandoc.org/lua-filters.html). Шаблон оформления не скопирован: используется установленный стандартный шаблон Quarto.
+## CI и локальная проверка поставки
+
+```sh
+CORE=/absolute/path/to/clean/pinned-core bash tools/check.sh
+```
+
+Скрипт проверяет точный SHA и чистоту Core, создаёт вход заново, запускает tests, затем `git archive HEAD` → штатный `tar` → `quarto add` в чистом consumer. Поэтому перед этой проверкой изменения расширения должны быть закоммичены. Проверяются byte-for-byte installed assets, реальный PDF/ресурсы и ошибка freshness, запрещён доступ Deno к developer checkout. Установленный entrypoint не импортирует исходный repo. Для PR CI использует одинаковые проверки с Quarto `release` и `pre-release`; значения каналов подвижны, action revisions закреплены полными SHA. Установленный render в Linux CI выполняется в отдельном network namespace (`sudo unshare --net`, затем сброс прав через `setpriv`). Локально `--deny-net` ограничивает только Deno, не его дочерние процессы; если namespace недоступен, это не полный offline proof.
+
+```sh
+# Для замера нужен ваш проверенный identity; результаты создаются вне исходного Git.
+deno run --allow-all tools/benchmark.ts content-package.json /tmp/print-bench "$VERIFIED_TOOLCHAIN_SHA256"
+```
+
+Локально на прогретом Quarto 1.11.5: бланки 2/4/6 страниц, по 5 правок шапки — 0.640–0.719 / 0.627–0.780 / 0.659–0.750 с; no-op 17/19/26 мс, 0 engine calls. Это материальный этап, без upstream collect/validate/вычислений, не cold-machine гарантия ≤5 с. Автоматическая пагинация может разделять условие и поле ответа; полный дизайн A9 и keep-together больших заданий этим этапом не заявлены.
+
+Официальные источники проверены 2026-10-01: [Quarto Typst](https://quarto.org/docs/output-formats/typst.html), [Pandoc templates](https://pandoc.org/MANUAL.html#templates), [Typst deps](https://typst.app/docs/changelog/0.14.0/), [Quarto Typst CLI](https://quarto.org/docs/cli/typst.html).
