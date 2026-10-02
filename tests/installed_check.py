@@ -51,6 +51,7 @@ def check(repo, package):
         assert tree(source/'_extensions/course-print') == tree(installed), 'installed bytes differ'
         assert not list(consumer.rglob('node_modules'))
         shutil.copyfile(package, consumer/'package.json')
+        payload = json.loads(package.read_text())
         (consumer/'header.json').write_text('{"group":"Installed", "date":"2026-10-01"}\n')
         # This smoke does not assume a distribution identity: expected non-reusable render.
         (consumer/'context.json').write_text('{"upstreamCurrent":true}\n')
@@ -64,11 +65,11 @@ def check(repo, package):
         result = json.loads(run(cmd, cwd=consumer, env=env))
         assert result['status'] == 'built' and result['engineCalls'] == 2 and not result['reusable']
         text = run(['pdftotext', str(consumer/'output/handout.pdf'), '-'])
-        for token in ['TLS', 'Installed', 'Name', '2026-10-01']:
+        condition = 'Production native condition' if payload.get('schema') == 'course-body-package-v1' else 'TLS'
+        for token in [condition, 'Installed', 'Name', '2026-10-01']:
             assert token in text, token
         for secret in ['TEACHER_SECRET', 'GRADING_SECRET', 'closedKey']:
             assert secret not in text, secret
-        payload = json.loads(package.read_text())
         for resource in payload['resources']:
             output = consumer/'output'/resource['target']
             assert hashlib.sha256(output.read_bytes()).hexdigest() == resource['sha256']
@@ -79,7 +80,7 @@ def check(repo, package):
         assert (consumer/'output/handout.pdf').read_bytes() == original
         assert not list(consumer.glob('.course-print-attempt-*'))
         assert not list(consumer.rglob('node_modules'))
-    print('PASS: git archive/tar, exact installed assets, no dev reads/imports, real PDF/resources, failure keeps old artifact')
+    print('PASS: git archive/tar, exact installed assets, no dev reads/imports, real PDF/resources, failure keeps old artifact; input ' + str(payload.get('schema', payload.get('experimental'))))
 
 
 if __name__ == '__main__':

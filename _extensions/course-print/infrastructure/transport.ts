@@ -1,13 +1,153 @@
-// Experimental p0-native-ast-v1 capability guard; not a production Core schema.
+// Public installed transport and the separate experimental fixture capability.
+export const productionSchema = "course-body-package-v1";
+export interface PublicBodyPackage {
+  schema: typeof productionSchema;
+  owner: string;
+  release: string;
+  apiVersion: number[];
+  questions: {
+    owner: string;
+    id: string;
+    key: string;
+    source: string;
+    visibility: "public";
+    answerType:
+      | "manual"
+      | "single-choice"
+      | "numeric"
+      | "multipart"
+      | "matching";
+    condition: unknown[];
+    publicAnswer: unknown[];
+  }[];
+  works: {
+    owner: string;
+    id: string;
+    key: string;
+    source: string;
+    kind: "lab" | "test" | "exam";
+    title: string;
+    items: string[];
+  }[];
+  resources: {
+    owner: string;
+    source: string;
+    effectiveBase: string;
+    target: string;
+    sha256: string;
+    data: string;
+    visibility: "public";
+  }[];
+}
 export const fail = (detail: string): never => {
   throw Error("ADAPTER: " + detail);
 };
-export function validatePackage(p: any) {
+const record = (v: any) =>
+  v !== null && typeof v === "object" && !Array.isArray(v);
+const fields = (v: any, names: string[]) =>
+  record(v) &&
+  Object.keys(v).length === names.length &&
+  Object.keys(v).every((key) => names.includes(key));
+const source = (v: unknown) =>
+  typeof v === "string" && v.length > 0 &&
+  !/[\\\x00]/.test(v) && !v.startsWith("/") &&
+  !/^[A-Za-z][A-Za-z0-9+.-]*:/.test(v) &&
+  !v.split("/").some((part) => part === "" || part === "." || part === "..");
+function validateProduction(p: any) {
   if (
-    p?.experimental !== "p0-native-ast-v1" || !Array.isArray(p.apiVersion) ||
+    !fields(p, [
+      "schema",
+      "owner",
+      "release",
+      "apiVersion",
+      "questions",
+      "works",
+      "resources",
+    ]) ||
+    typeof p.owner !== "string" || !/^[a-z][a-z0-9-]*$/.test(p.owner) ||
+    typeof p.release !== "string" || !p.release.trim() ||
+    !p.apiVersion.length ||
+    p.apiVersion.some((n: unknown) =>
+      typeof n !== "number" || !Number.isInteger(n) || n < 0
+    )
+  ) {
+    fail("invalid production package fields or identity");
+  }
+  for (const r of p.resources) {
+    if (
+      !fields(r, [
+        "owner",
+        "source",
+        "effectiveBase",
+        "target",
+        "sha256",
+        "data",
+        "visibility",
+      ]) ||
+      !source(r.source) || !source(r.effectiveBase) ||
+      typeof r.sha256 !== "string" || !/^[a-f0-9]{64}$/.test(r.sha256)
+    ) {
+      fail("invalid production resource transport: actual bytes required");
+    }
+  }
+  for (const q of p.questions) {
+    if (
+      !fields(q, [
+        "owner",
+        "id",
+        "key",
+        "source",
+        "visibility",
+        "answerType",
+        "condition",
+        "publicAnswer",
+      ])
+    ) {
+      fail("invalid production question fields: public projection required");
+    }
+    if (
+      typeof q.id !== "string" || !/^exr-[a-z0-9-]+$/.test(q.id) ||
+      !source(q.source) || q.visibility !== "public" ||
+      !["manual", "single-choice", "numeric", "multipart", "matching"].includes(
+        q.answerType,
+      )
+    ) {
+      fail("invalid production question transport");
+    }
+    if (!Array.isArray(q.condition) || !Array.isArray(q.publicAnswer)) {
+      fail("missing native body");
+    }
+    validateBody(q.condition, p);
+    validateBody(q.publicAnswer, p);
+  }
+  for (const w of p.works) {
+    if (
+      !fields(w, ["owner", "id", "key", "source", "kind", "title", "items"]) ||
+      w.owner !== p.owner || typeof w.id !== "string" ||
+      !/^sec-[a-z0-9-]+$/.test(w.id) ||
+      w.key !== p.owner + "/" + w.id || !source(w.source) ||
+      !["lab", "test", "exam"].includes(w.kind) ||
+      typeof w.title !== "string" || !w.title.trim() ||
+      !Array.isArray(w.items) || !w.items.length
+    ) {
+      fail("invalid production work transport");
+    }
+  }
+}
+export function validatePackage(p: any) {
+  if (!record(p)) fail("unsupported package or missing fields");
+  if (Object.hasOwn(p, "schema") && Object.hasOwn(p, "experimental")) {
+    fail("ambiguous package contract");
+  }
+  const production = p.schema === productionSchema;
+  if (
+    (!production &&
+      (Object.hasOwn(p, "schema") || p.experimental !== "p0-native-ast-v1")) ||
+    !Array.isArray(p.apiVersion) ||
     !Array.isArray(p.questions) || !Array.isArray(p.works) ||
     !Array.isArray(p.resources)
   ) fail("unsupported package or missing fields");
+  if (production) validateProduction(p);
   const keys = new Set<string>(), targets = new Set<string>();
   for (const q of p.questions) {
     if (

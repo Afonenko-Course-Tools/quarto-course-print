@@ -21,6 +21,7 @@ printf 'Experimental companion Core: %s\n' "$revision"
 deno run "${flags[@]}" "$fixture/package.ts" "$fixture/fixtures/corpus.qmd" "$stage/package.json" \
   "$fixture/fixtures/work-one.qmd" "$fixture/fixtures/work-two.qmd"
 cd "$repo"
-P0_PACKAGE="$stage/package.json" deno test "${flags[@]}" tests
+P0_PACKAGE="$stage/package.json" PRINT_PUBLIC_PACKAGE="$stage/public-package.json" deno test "${flags[@]}" tests
 python3 -m unittest discover -s tests -p 'test_*.py'
 python3 tests/installed_check.py "$repo" "$stage/package.json"
+python3 tests/installed_check.py "$repo" "$stage/public-package.json"

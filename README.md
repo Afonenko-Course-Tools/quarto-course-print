@@ -1,8 +1,14 @@
-# Quarto Course Print — экспериментальный P0
+# Quarto Course Print
 
-Узкий потребитель общего пакета `p0-native-ast-v1`, используемого также Moodle и пробой PrairieLearn. Он создаёт публичный бланк из нативных блоков Pandoc в изолированном default staging. Документированные `quarto pandoc` и `quarto typst compile` используют установленный шаблон, partial и шрифты. Исходный авторский QMD и веб-сборка потребителю не нужны. Преподавательский PDF не создаётся.
+Узкий потребитель публичного пакета `course-body-package-v1` и отдельного экспериментального fixture-контракта `p0-native-ast-v1`, используемого также Moodle и пробой PrairieLearn. Он создаёт публичный бланк из нативных блоков Pandoc в изолированном default staging. Документированные `quarto pandoc` и `quarto typst compile` используют установленный шаблон, partial и шрифты. Исходный авторский QMD и веб-сборка потребителю не нужны. Преподавательский PDF не создаётся.
 
-## Получение общего входного пакета
+## Производственный публичный transport
+
+`schema: course-body-package-v1` обозначает только публичную проекцию: owner, release, Pandoc API version, канонические задания, фиксированные работы и конкретные публичные bytes ресурсов. Точный [контракт](docs/public-body.md) закрывает набор полей. `closedKey`, `solution`, `gradingNotes`, произвольные `checked`/receipt поля, закрытые маркеры и неподдерживаемые нативные узлы отклоняются, в том числе в невыбранном задании. Пакет с одновременно `schema` и `experimental` неоднозначен и отклоняется. Print не выделяет public части из private производственного пакета и не открывает исходные QMD.
+
+Вызывающая сторона получает эту проекцию через актуальную проверку producer API Core: принадлежность owner-сессии, receipt, исходников, native наблюдений и ресурсной политики проверяет производитель. Проверка Print подтверждает форму transport и реальные SHA-256 переданных bytes; произвольная JSON-строка или `checked:true` не доказывают producer integrity. Прежнее доверенное `upstreamCurrent:true` остаётся обязательным lifecycle-контекстом caller, а не заменой проверки producer handle. Installed transport-тест с вручную заданным публичным пакетом не доказывает реализацию producer API или выполнение owner engine.
+
+## Получение экспериментального fixture-пакета
 
 Для производителя нужны Quarto и CUE в PATH. Временный companion Core закреплён на `4f5caf9a15b9bd36476cad8a646e81521fbd29d1` из `Afonenko-Course-Tools/quarto-course`; текущая незамерженная ветка не используется. Получите отдельный чистый checkout этого SHA (или исходный архив этого commit), затем укажите его каталог в `CORE`. Из каталога адаптера:
 
@@ -19,7 +25,7 @@ deno run --allow-read --allow-write --allow-run --allow-env \
 
 ## Печать и проверка
 
-Проверены Deno **2.7.14**, Quarto **1.10.18 / 1.11.5**, Pandoc **3.10**, Typst **0.15.1**. Производитель использует CUE **0.17.1**. npm и сетевые импорты во время печати не нужны.
+Experimental P0 ранее проверен с Deno **2.7.14**, Quarto **1.10.18 / 1.11.5**, Pandoc **3.10**, Typst **0.15.1**. Новая public transport поставка локально проверена на Quarto **1.10.18**; её stable/pre-release gate выполняется в CI. Fixture-производитель использует CUE **0.17.1**. npm и сетевые импорты во время печати не нужны.
 
 ```sh
 printf '%s\n' '{"date":"2026-10-01","group":"A"}' > header.json
@@ -49,7 +55,7 @@ const result = await renderPrint(currentPackage, workKey, freshTarget, header, {
 });
 ```
 
-`previous` необязателен: по умолчанию проверяется существующий целевой каталог. API возвращает `status` (`built`/`reused`), `reusable`, `fingerprint`, `engineCalls` и `timings` в миллисекундах. Hit копирует проверенные bytes в свежий candidate; вёрстка не запускается. Отпечаток включает публичный AST, выбранные Image/Link ресурсы, шапку, конечные URL, installed template/partial/fonts и toolchain identity. Ключ, решение, release ID и невыбранный материал не входят в render hash; актуальная проверка пакета всё равно обязательна.
+`previous` необязателен: по умолчанию проверяется существующий целевой каталог. API возвращает `status` (`built`/`reused`), `reusable`, `fingerprint`, `engineCalls` и `timings` в миллисекундах. Hit копирует проверенные bytes в свежий candidate; вёрстка не запускается. Отпечаток включает публичный AST, выбранные Image/Link ресурсы, шапку, конечные URL, installed template/partial/fonts и toolchain identity. В experimental fixture ключ и решение не входят в render hash; производственный пакет этих полей вообще не принимает. Release ID и невыбранный материал не входят в render hash; актуальная проверка пакета всё равно обязательна.
 
 Typst `--deps --deps-format=json` проверяется после сборки. Depfile не перечисляет шрифты и linked attachments, поэтому они входят в явный индекс. Системные и embedded fonts отключены: установлены DejaVu 2.35 (Sans и Mono regular/bold/oblique/bold-oblique) и Latin Modern Math 1.959. Шаблоны Pandoc 3.10 и fonts имеют provenance, SHA и licenses в `assets/manifest.json` / `assets/licenses`. Неизвестный compiler input блокирует сборку; неизвестная upstream зависимость требует refresh, а не анализа QMD собственным parser. `assets` в API — необязательный каталог **доверенного полного recipe**, не произвольная настройка из авторского содержимого.
 
@@ -78,7 +84,7 @@ deno run --allow-read --allow-write --allow-run --allow-env \
 
 Ресурсы выбираются по точным Image/Link URL нативного AST. Упоминание имени в прозе или совпадение по префиксу не копирует файл. Хеш и владелец проверяются; пустые компоненты, `.`/`..` и повторные разделители пути отклоняются до записи. Общий производитель разделяет вложенные/соседние решения и замечания, передаёт все вхождения ответов CUE и отклоняет неподдерживаемые условия профиля до публичной проекции.
 
-Контракт не обещает общего переноса богатого AST. Даже если отдельная проба умеет одну размеченную формулу на целевой странице, этот адаптер принимает более узкое подмножество. Производственная схема Core не меняется.
+Контракт не обещает общего переноса богатого AST. Даже если отдельная проба умеет одну размеченную формулу на целевой странице, этот адаптер принимает более узкое подмножество. Поддержка установленного публичного transport не доказывает педагогическую валидность произвольного пакета, общий production body export Core или LMS-доставку.
 
 ## Установка
 
@@ -88,7 +94,7 @@ deno run --allow-read --allow-write --allow-run --allow-env \
 quarto add /absolute/path/to/quarto-course-print --no-prompt
 ```
 
-Установленный entrypoint выполнен без node_modules и с запретом сети. Манифест описывает экспериментальный контракт; активация только явной командой, без автоматического производственного render-hook.
+Установленный entrypoint выполнен без node_modules и с запретом сети. Манифест явно описывает производственный публичный transport и отдельный экспериментальный контракт; активация только явной командой, без автоматического render-hook.
 
 ## CI и локальная проверка поставки
 
@@ -96,7 +102,7 @@ quarto add /absolute/path/to/quarto-course-print --no-prompt
 CORE=/absolute/path/to/clean/pinned-core bash tools/check.sh
 ```
 
-Скрипт проверяет точный SHA и чистоту Core, создаёт вход заново, запускает tests, затем `git archive HEAD` → штатный `tar` → `quarto add` в чистом consumer. Поэтому перед этой проверкой изменения расширения должны быть закоммичены. Проверяются byte-for-byte installed assets, реальный PDF/ресурсы и ошибка freshness, запрещён доступ Deno к developer checkout. Установленный entrypoint не импортирует исходный repo. Для PR CI использует одинаковые проверки с Quarto `release` и `pre-release`; значения каналов подвижны, action revisions закреплены полными SHA. Установленный render в Linux CI выполняется в отдельном network namespace (`sudo unshare --net`, затем сброс прав через `setpriv`). Локально `--deny-net` ограничивает только Deno, не его дочерние процессы; если namespace недоступен, это не полный offline proof.
+Скрипт проверяет точный SHA и чистоту Core, создаёт experimental вход заново, запускает tests, затем `git archive HEAD` → штатный `tar` → `quarto add` в чистом consumer отдельно для experimental пакета и вручную заданной public transport fixture. Поэтому перед этой проверкой изменения расширения должны быть закоммичены. Проверяются byte-for-byte installed assets, реальный PDF/ресурсы и ошибка freshness, запрещён доступ Deno к developer checkout. Установленный entrypoint не импортирует исходный repo. Для PR CI использует одинаковые проверки с Quarto `release` и `pre-release`; значения каналов подвижны, action revisions закреплены полными SHA. Установленный render в Linux CI выполняется в отдельном network namespace (`sudo unshare --net`, затем сброс прав через `setpriv`). Локально `--deny-net` ограничивает только Deno, не его дочерние процессы; если namespace недоступен, это не полный offline proof.
 
 ```sh
 # Для замера нужен ваш проверенный identity; результаты создаются вне исходного Git.
