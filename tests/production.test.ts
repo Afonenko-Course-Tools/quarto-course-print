@@ -370,3 +370,29 @@ Deno.test("production public package renders native PDF and exact current resour
     await Deno.remove(root, { recursive: true });
   }
 });
+
+Deno.test("unknown legacy transport refuses malformed records and native URL slots with adapter errors", () => {
+  const legacy = () => {
+    const { schema: _schema, ...p } = sample();
+    return { ...p, experimental: "p0-native-ast-v1" };
+  };
+  for (const field of ["questions", "works", "resources"] as const) {
+    const p = legacy();
+    const malformed: unknown = { ...p, [field]: [null] };
+    rejects(() => preparePrint(malformed, p.works[0].key, {}), "ADAPTER");
+  }
+  for (
+    const node of [
+      { t: "Link", c: [] },
+      { t: "Image", c: [[], [], [null]] },
+      { t: "Span", c: [null, []] },
+    ]
+  ) {
+    const p = legacy();
+    const malformed: unknown = {
+      ...p,
+      questions: [{ ...p.questions[0], condition: [node] }],
+    };
+    rejects(() => preparePrint(malformed, p.works[0].key, {}), "ADAPTER");
+  }
+});
