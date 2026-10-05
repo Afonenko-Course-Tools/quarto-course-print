@@ -1,0 +1,4 @@
+course:
+  view: student
+project:
+  output-dir: _site-student

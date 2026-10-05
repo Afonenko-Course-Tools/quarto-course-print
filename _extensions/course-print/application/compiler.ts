@@ -4,19 +4,19 @@ import {
   type PrintResource,
 } from "../infrastructure/transport.ts";
 import { copyIndex, encode, write } from "../infrastructure/files.ts";
-import { compilerDependencies } from "./dependencies.ts";
-import type { PrintRecipe } from "./recipe.ts";
+import type { FileDigest } from "./contracts.ts";
+
 export async function compilePrint(
   build: string,
-  candidate: string,
   resources: readonly PrintResource[],
-  recipe: PrintRecipe,
+  assets: string,
+  assetIndex: FileDigest[],
+  publicJson: string,
   timings: Record<string, number>,
-): Promise<string[]> {
+): Promise<void> {
   const staging = performance.now();
-  await Deno.mkdir(build);
-  await copyIndex(recipe.assets, build + "/recipe", recipe.assetIndex);
-  await write(build + "/public.json", encode(recipe.publicJson));
+  await copyIndex(assets, build + "/recipe", assetIndex);
+  await write(build + "/public.json", encode(publicJson));
   for (const r of resources) {
     await write(
       build + "/" + r.target,
@@ -65,10 +65,6 @@ export async function compilePrint(
       "recipe/fonts",
       "--ignore-system-fonts",
       "--ignore-embedded-fonts",
-      "--deps",
-      "deps.json",
-      "--deps-format",
-      "json",
       "--creation-timestamp",
       "0",
     ],
@@ -76,13 +72,8 @@ export async function compilePrint(
     build,
   );
   timings.typst = performance.now() - typst;
-  const dependencies = await compilerDependencies(build, recipe);
   const pdf = await Deno.readFile(build + "/handout.pdf");
   if (new TextDecoder().decode(pdf.slice(0, 5)) !== "%PDF-") {
     fail("missing valid PDF output");
   }
-  await write(candidate + "/handout.pdf", pdf);
-  await write(candidate + "/public.json", encode(recipe.publicJson));
-  await copyIndex(build, candidate, recipe.resourceIndex);
-  return dependencies;
 }

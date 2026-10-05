@@ -1,4 +1,4 @@
-name: Установленный Print P0
+name: Установленный Print Native
 
 on:
   pull_request:
@@ -21,17 +21,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        quarto: [release, pre-release]
+        quarto: ["1.10.18", "1.11.5"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: print
           persist-credentials: false
-      - name: Экспериментальный производитель тестового пакета Core
+      - name: Текущий native производитель Core
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: Afonenko-Course-Tools/quarto-course
-          ref: 4f5caf9a15b9bd36476cad8a646e81521fbd29d1
+          ref: 992759e12924a3117ac92163ec51d62d59bb3267 # Tested native Core provider
           path: core-fixture
           persist-credentials: false
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0

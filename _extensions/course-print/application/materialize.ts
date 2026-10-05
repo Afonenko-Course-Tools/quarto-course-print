@@ -1,83 +1,99 @@
-import { fail, type PrintResource } from "../infrastructure/transport.ts";
-import { copyIndex, files, json } from "../infrastructure/files.ts";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  fail,
+  type PrintResource,
+  resourceTargets,
+} from "../infrastructure/transport.ts";
+import {
+  files,
+  info,
+  safePath,
+  safeRelative,
+  write,
+} from "../infrastructure/files.ts";
 import { compilePrint } from "./compiler.ts";
-import type {
-  PrintDocument,
-  PrintOptions,
-  PrintReceipt,
-  PrintResult,
-} from "./contracts.ts";
-import { prepareRecipe } from "./recipe.ts";
-import { marker, reusableReceipt } from "./receipt.ts";
-import { promotePrint, withPrintAttempt } from "./promotion.ts";
+import type { PrintDocument, PrintOptions, PrintResult } from "./contracts.ts";
 export type { PrintOptions, PrintResult } from "./contracts.ts";
 export async function materialize(
   doc: PrintDocument,
   resources: readonly PrintResource[],
-  work: string,
+  _work: string,
   out: string,
   options: PrintOptions,
   validationMs: number,
 ): Promise<PrintResult> {
   const started = performance.now(),
     timings: Record<string, number> = { validate: validationMs };
-  const recipe = await prepareRecipe(doc, resources, options);
-  timings.fingerprint = performance.now() - started;
-  return await withPrintAttempt(
-    out,
-    options.previous,
-    work,
-    async (attempt, destination, previous) => {
-      const prior = await reusableReceipt(previous, work, recipe);
-      const staging = performance.now();
-      let dependencies: string[],
-        status: "built" | "reused",
-        engineCalls: number;
-      if (prior) {
-        await copyIndex(previous, attempt.candidate, prior.outputs);
-        dependencies = prior.dependencies;
-        status = "reused";
-        engineCalls = 0;
-        timings.staging = performance.now() - staging;
-      } else {
-        dependencies = await compilePrint(
-          attempt.build,
-          attempt.candidate,
-          resources,
-          recipe,
-          timings,
-        );
-        status = "built";
-        engineCalls = 2;
-      }
-      const verification = performance.now();
-      const outputs = await files(attempt.candidate);
-      if (
-        json(outputs.map((f) => f.path).sort()) !== json(recipe.expected)
-      ) fail("unexpected target output set");
-      const receipt: PrintReceipt = {
-        owner: "course-print",
-        recipe: recipe.version,
-        target: work,
-        reusable: recipe.reusable,
-        fingerprint: recipe.fingerprint,
-        dependencies,
-        outputs,
-      };
-      await Deno.writeTextFile(
-        attempt.candidate + "/" + marker,
-        json(receipt) + "\n",
-      );
-      await promotePrint(attempt, destination, work);
-      timings.verifyAndPromote = performance.now() - verification;
-      timings.total = performance.now() - started + validationMs;
-      return {
-        status,
-        reusable: recipe.reusable,
-        fingerprint: recipe.fingerprint,
-        engineCalls,
-        timings,
-      };
-    },
+  const destination = await safePath(out);
+  const assets = await safePath(
+    options.assets ?? fileURLToPath(new URL("../assets", import.meta.url)),
   );
+  const assetIndex = await files(assets);
+  await Deno.mkdir(dirname(destination), { recursive: true });
+  const build = await Deno.makeTempDir({
+    dir: dirname(destination),
+    prefix: ".course-print-build-",
+  });
+  try {
+    await compilePrint(
+      build,
+      resources,
+      assets,
+      assetIndex,
+      JSON.stringify(doc),
+      timings,
+    );
+    // Validate every destination before copying current selected bytes. No old output authorizes reuse.
+    const oldResources: string[] = [];
+    if (await info(destination + "/public.json")) {
+      await safePath(destination + "/public.json");
+      const old = JSON.parse(
+        await Deno.readTextFile(destination + "/public.json"),
+      );
+      if (!Array.isArray(old.blocks)) {
+        fail("malformed previous public document");
+      }
+      for (const target of resourceTargets(old.blocks)) {
+        if (/^https?:\/\//.test(target)) continue;
+        if (
+          !safeRelative(target) ||
+          /(^|\/)(?:\.[^/]+|_extensions|_freeze|_generated)(\/|$)/.test(
+            target,
+          ) ||
+          /\.(?:qmd|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(target) ||
+          target === "public.json" ||
+          target === "handout.pdf"
+        ) fail("unsafe previous resource target");
+        await safePath(destination + "/" + target);
+        oldResources.push(target);
+      }
+    }
+    for (const r of resources) {
+      if (r.target === "public.json" || r.target === "handout.pdf") {
+        fail("reserved Print output resource target");
+      }
+    }
+    const selected = [
+      "handout.pdf",
+      "public.json",
+      ...resources.map((r) => r.target),
+    ];
+    for (const name of selected) await safePath(destination + "/" + name);
+    for (const target of oldResources) {
+      if (
+        !selected.includes(target) && await info(destination + "/" + target)
+      ) await Deno.remove(destination + "/" + target);
+    }
+    for (const name of selected) {
+      await write(
+        destination + "/" + name,
+        await Deno.readFile(build + "/" + name),
+      );
+    }
+    timings.total = performance.now() - started + validationMs;
+    return { status: "built", engineCalls: 2, timings };
+  } finally {
+    await Deno.remove(build, { recursive: true });
+  }
 }

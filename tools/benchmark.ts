@@ -1,9 +1,9 @@
 // Local measured materialization only; no claim about upstream collect/compute time.
 import { renderPrint } from "../_extensions/course-print/application/export.ts";
-const [input, out, identity] = Deno.args;
-if (!input || !out || !identity) {
+const [input, out] = Deno.args;
+if (!input || !out) {
   throw Error(
-    "usage: benchmark.ts package.json output-directory trusted-toolchain-sha256",
+    "usage: benchmark.ts package.json output-directory",
   );
 }
 const original = JSON.parse(await Deno.readTextFile(input));
@@ -19,14 +19,14 @@ for (const count of [4, 14, 20]) {
   }
   p.works = [{ ...p.works[0], items: p.questions.map((q: any) => q.key) }];
   const target = out + "/questions-" + count;
-  const opt = { upstreamCurrent: true, toolchainIdentity: identity };
+  const opt = {};
   const runs = [];
   runs.push({
     label: "first target render; host already warm",
     ...await renderPrint(p, p.works[0].key, target, {}, opt),
   });
   runs.push({
-    label: "no-op",
+    label: "repeat current render",
     ...await renderPrint(p, p.works[0].key, target, {}, opt),
   });
   for (let i = 0; i < 5; i++) {
