@@ -61,7 +61,7 @@ export async function materialize(
           /(^|\/)(?:\.[^/]+|_extensions|_freeze|_generated)(\/|$)/.test(
             target,
           ) ||
-          /\.(?:qmd|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(target) ||
+          /\.(?:qmd|md|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(target) ||
           target === "public.json" ||
           target === "handout.pdf"
         ) fail("unsafe previous resource target");

@@ -193,7 +193,7 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
       typeof r.data !== "string" || typeof r.sha256 !== "string" ||
       !/^[a-zA-Z0-9._/-]+$/.test(r.target) || r.target.startsWith("/") ||
       /(^|\/)(?:\.[^/]+|_extensions|_freeze|_generated)(\/|$)/.test(r.target) ||
-      /\.(?:qmd|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(r.target) ||
+      /\.(?:qmd|md|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(r.target) ||
       r.target.split("/").some((part: string) =>
         part === "" || part === "." || part === ".."
       ) || targets.has(r.target)

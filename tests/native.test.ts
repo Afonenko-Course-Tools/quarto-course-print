@@ -99,3 +99,54 @@ Deno.test("previous public document cannot authorize deletion of a source file",
     await Deno.remove(root, { recursive: true });
   }
 });
+
+Deno.test("previous Markdown source cannot be deleted by forged public URL", async () => {
+  const root = await Deno.makeTempDir();
+  try {
+    await Deno.mkdir(root + "/out");
+    await Deno.writeTextFile(root + "/out/chapter.md", "SOURCE_MUST_SURVIVE");
+    await Deno.writeTextFile(
+      root + "/out/public.json",
+      JSON.stringify({
+        blocks: [{
+          t: "Para",
+          c: [{
+            t: "Link",
+            c: [["", [], []], [{ t: "Str", c: "old" }], ["chapter.md", ""]],
+          }],
+        }],
+      }),
+    );
+    try {
+      await renderPrint(sample(), "course-a/sec-work-one", root + "/out", {});
+    } catch {}
+    const source = await Deno.readTextFile(root + "/out/chapter.md").catch(() =>
+      undefined
+    );
+    assert(
+      source === "SOURCE_MUST_SURVIVE",
+      "Print deleted authored Markdown source",
+    );
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+Deno.test("Print refuses current Markdown source resource", () => {
+  const p: any = sample();
+  p.resources = [{
+    owner: p.owner,
+    source: "chapter.md",
+    effectiveBase: "index.qmd",
+    target: "chapter.md",
+    sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    data: "",
+    visibility: "public",
+  }];
+  let refused = false;
+  try {
+    preparePrint(p, p.works[0].key, {});
+  } catch (e) {
+    refused = String(e).includes("ADAPTER");
+  }
+  assert(refused, "current Markdown source accepted as Print resource");
+});
