@@ -1,0 +1,4 @@
+course:
+  view: full
+project:
+  output-dir: _site-full

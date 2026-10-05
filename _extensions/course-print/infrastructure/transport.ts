@@ -1,4 +1,4 @@
-// Public installed transport and the separate experimental fixture capability.
+// Public native Body transport.
 export const productionSchema = "course-body-package-v1";
 export interface PublicBodyPackage {
   schema: typeof productionSchema;
@@ -39,30 +39,7 @@ export interface PublicBodyPackage {
     visibility: "public";
   }[];
 }
-/** The legacy probe capability retains its permissive metadata, separate from production. */
-export interface LegacyBodyPackage {
-  experimental: "p0-native-ast-v1";
-  owner: string;
-  apiVersion: unknown[];
-  questions: {
-    owner: string;
-    id: string;
-    key: string;
-    visibility: unknown;
-    answerType: unknown;
-    condition: unknown[];
-    publicAnswer: unknown[];
-  }[];
-  works: { key: string; title: string; items: string[] }[];
-  resources: {
-    owner: string;
-    target: string;
-    sha256: string;
-    data: string;
-    visibility: "public";
-  }[];
-}
-export type BodyPackage = PublicBodyPackage | LegacyBodyPackage;
+export type BodyPackage = PublicBodyPackage;
 export type PrintResource = BodyPackage["resources"][number];
 export function fail(detail: string): never {
   throw Error("ADAPTER: " + detail);
@@ -117,7 +94,11 @@ function validateProduction(
         "data",
         "visibility",
       ]) ||
-      !source(r.source) || !source(r.effectiveBase) ||
+      !source(r.source) ||
+      !(source(r.effectiveBase) ||
+        (typeof r.effectiveBase === "string" &&
+          r.effectiveBase.startsWith("/") &&
+          !/[\\\x00]/.test(r.effectiveBase))) ||
       typeof r.sha256 !== "string" || !/^[a-f0-9]{64}$/.test(r.sha256)
     ) {
       fail("invalid production resource transport: actual bytes required");
@@ -176,8 +157,7 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
   }
   const production = p.schema === productionSchema;
   if (
-    (!production &&
-      (Object.hasOwn(p, "schema") || p.experimental !== "p0-native-ast-v1")) ||
+    !production ||
     !array(p.apiVersion) ||
     !array(p.questions) || !array(p.works) ||
     !array(p.resources)
@@ -211,7 +191,9 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
       !record(r) || r.owner !== p.owner || r.visibility !== "public" ||
       typeof r.target !== "string" ||
       typeof r.data !== "string" || typeof r.sha256 !== "string" ||
-      !/^resources\/[a-zA-Z0-9._/-]+$/.test(r.target) ||
+      !/^[a-zA-Z0-9._/-]+$/.test(r.target) || r.target.startsWith("/") ||
+      /(^|\/)(?:\.[^/]+|_extensions|_freeze|_generated)(\/|$)/.test(r.target) ||
+      /\.(?:qmd|md|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(r.target) ||
       r.target.split("/").some((part: string) =>
         part === "" || part === "." || part === ".."
       ) || targets.has(r.target)
@@ -275,7 +257,7 @@ export function validateBody(blocks: unknown[], resources: readonly unknown[]) {
         if (!array(v.c) || !array(v.c[1])) {
           fail("malformed native header");
         }
-        if (v.c[1][0]) fail("anchored header unsupported");
+        if (typeof v.c[1][0] !== "string") fail("malformed native header");
       }
       if (v.t === "Math") {
         if (!array(v.c) || typeof v.c[1] !== "string") {

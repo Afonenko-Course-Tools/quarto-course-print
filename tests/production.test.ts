@@ -311,17 +311,9 @@ Deno.test("production public package renders native PDF and exact current resour
     throw Error("Expected refusal: " + expected);
   }
   try {
-    await refusal({ checked: true }, "upstream refresh required");
-    let absent = false;
-    try {
-      await Deno.stat(out);
-    } catch (error) {
-      absent = error instanceof Deno.errors.NotFound;
-    }
-    assert(absent, "Unconfirmed package created output");
     const result = await renderPrint(p, p.works[0].key, out, {
       group: "Production",
-    }, { upstreamCurrent: true });
+    }, {});
     assert(
       result.status === "built" && result.engineCalls === 2,
       "Production transport failed native PDF materialization",
@@ -354,7 +346,7 @@ Deno.test("production public package renders native PDF and exact current resour
       await Deno.writeTextFile(capture, JSON.stringify(p, null, 2) + "\n");
     }
     p.resources[0].data = btoa("changed without a refreshed hash");
-    await refusal({ upstreamCurrent: true }, "resource hash mismatch");
+    await refusal({}, "resource hash mismatch");
     const current = await Deno.readFile(out + "/handout.pdf");
     assert(
       current.length === pdf.length &&

@@ -1,1 +1,1 @@
-{"tasks":{"test":"deno test --allow-all tests"}}
+{"tasks":{"test":"bash tools/check.sh"}}

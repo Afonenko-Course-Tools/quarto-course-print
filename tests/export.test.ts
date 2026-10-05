@@ -5,14 +5,15 @@ import {
 const assert = (x: unknown, m = "assertion failed") => {
   if (!x) throw Error(m);
 };
-const sample = () =>
-  JSON.parse(
-    Deno.env.get("P0_PACKAGE")
-      ? Deno.readTextFileSync(Deno.env.get("P0_PACKAGE")!)
-      : Deno.readTextFileSync(
-        "../../worktrees/core-export/tests/probes/export-boundary/fixtures/package.json",
-      ),
-  );
+const sample = () => {
+  const path = Deno.env.get("BODY_PACKAGE");
+  if (!path) {
+    throw Error(
+      "BODY_PACKAGE required: run CORE=/path/to/current/core bash tools/check.sh",
+    );
+  }
+  return JSON.parse(Deno.readTextFileSync(path));
+};
 Deno.test("public native document embeds header and fields, excludes all teacher content including demo", () => {
   const p = sample();
   const doc = preparePrint(p, p.works[0].key, {
@@ -59,7 +60,7 @@ Deno.test("isolated default Quarto Typst PDF needs no QMD source or web build", 
   const dir = await Deno.makeTempDir();
   try {
     const p = sample();
-    await renderPrint(p, p.works[0].key, dir, {}, { upstreamCurrent: true });
+    await renderPrint(p, p.works[0].key, dir, {}, {});
     const pdf = await Deno.readFile(dir + "/handout.pdf");
     assert(new TextDecoder().decode(pdf.slice(0, 4)) === "%PDF");
     const o = await new Deno.Command("pdftotext", {
@@ -79,7 +80,7 @@ Deno.test("isolated default Quarto Typst PDF needs no QMD source or web build", 
 Deno.test("print retains mapped public file targets beside the PDF", async () => {
   const p = sample(), dir = await Deno.makeTempDir();
   try {
-    await renderPrint(p, p.works[0].key, dir, {}, { upstreamCurrent: true });
+    await renderPrint(p, p.works[0].key, dir, {}, {});
     assert(
       (await Deno.readTextFile(dir + "/" + p.resources[0].target)).includes(
         "public data",
@@ -130,8 +131,8 @@ Deno.test("review: printed work copies exact native targets and excludes resourc
     c: [{ t: "Str", c: "resources/course-a/prose.txt" }],
   });
   try {
-    await renderPrint(p, p.works[0].key, dir, {}, { upstreamCurrent: true });
-    await Deno.stat(dir + "/resources/course-a/data.txt");
+    await renderPrint(p, p.works[0].key, dir, {}, {});
+    await Deno.stat(dir + "/" + p.resources[0].target);
     for (const name of ["data", "prose.txt"]) {
       let missing = false;
       try {
@@ -158,9 +159,7 @@ Deno.test("review: print rejects aliases before creating output", async () => {
     try {
       let rejected = false;
       try {
-        await renderPrint(p, p.works[0].key, dir + "/out", {}, {
-          upstreamCurrent: true,
-        });
+        await renderPrint(p, p.works[0].key, dir + "/out", {}, {});
       } catch (e) {
         rejected = String(e).includes("ADAPTER");
       }
@@ -203,7 +202,7 @@ Deno.test("installed font closure renders Cyrillic, bold, italic, code and math 
     },
   ];
   try {
-    await renderPrint(p, p.works[1].key, dir, {}, { upstreamCurrent: true });
+    await renderPrint(p, p.works[1].key, dir, {}, {});
     const output = await new Deno.Command("pdftotext", {
       args: [dir + "/handout.pdf", "-"],
       stdout: "piped",

@@ -38,7 +38,7 @@ function prepareValidatedPrint(
     if (!q) fail("unknown question binding");
     if (q.visibility !== "public") {
       fail(
-        "closed question requires a separately authorized delivery policy; P0 public only",
+        "closed question is unsupported",
       );
     }
     if (
@@ -55,6 +55,16 @@ function prepareValidatedPrint(
       ...structuredClone(q.publicAnswer),
     );
   }
+  // Per-page header anchors have no cross-question identity in a printed handout.
+  const strip = (v: any): void => {
+    if (!v || typeof v !== "object") return;
+    if (v.t === "Header") v.c[1][0] = "";
+    Object.values(v).forEach((x) => {
+      if (Array.isArray(x)) x.forEach(strip);
+      else strip(x);
+    });
+  };
+  blocks.forEach(strip);
   return { "pandoc-api-version": p.apiVersion, meta: {}, blocks };
 }
 export { type PrintOptions, type PrintResult } from "./materialize.ts";
@@ -70,11 +80,6 @@ export async function renderPrint(
   const p = validatePackage(input);
   const doc = prepareValidatedPrint(p, work, header);
   await verifyResources(p);
-  if (options.upstreamCurrent !== true) {
-    fail(
-      "upstream refresh required: explicitly assert current validated package and final URLs",
-    );
-  }
   const selected = resourceTargets(doc.blocks);
   const used: PrintResource[] = p.resources.filter((r) =>
     selected.has(r.target)
