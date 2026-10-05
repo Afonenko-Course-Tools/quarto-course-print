@@ -1,6 +1,8 @@
+node_modules/
 output/
-*.pdf
-content-package.json
-binding.json
-answer-package.json
 answer-output/
+content-package.json
+answer-package.json
+header.json
+context.json
+__pycache__/
