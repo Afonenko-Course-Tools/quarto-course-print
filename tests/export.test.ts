@@ -202,7 +202,7 @@ Deno.test("installed font closure renders Cyrillic, bold, italic, code and math 
     },
   ];
   try {
-    await renderPrint(p, p.works[1].key, dir, {}, {});
+    await renderPrint(p, p.works[0].key, dir, {}, {});
     const output = await new Deno.Command("pdftotext", {
       args: [dir + "/handout.pdf", "-"],
       stdout: "piped",

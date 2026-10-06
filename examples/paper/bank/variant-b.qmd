@@ -1,0 +1,11 @@
+---
+assessment:
+  kind: test
+---
+
+# Variant B {#sec-variant-b}
+
+::: {.task-items}
+1. @exr-choice
+2. [@exr-control]{requirement="optional"}
+:::

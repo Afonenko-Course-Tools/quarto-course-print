@@ -5,6 +5,6 @@ assessment:
 
 # Second practice {#sec-work-two}
 
-::: {.assessment-items}
+::: {.task-items}
 1. @exr-manual
 :::

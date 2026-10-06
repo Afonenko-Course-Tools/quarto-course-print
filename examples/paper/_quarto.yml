@@ -1,0 +1,17 @@
+project:
+  type: website
+  output-dir: _site
+  render: [index.qmd]
+  resources: [artifacts/**]
+website:
+  title: Paper handouts
+  repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-print
+  repo-subdir: examples/paper
+  repo-actions: [source]
+  repo-branch: v0.2.0
+format: html
+course:
+  id: demo-paper
+profile:
+  default: full
+  group: [[student, full]]
