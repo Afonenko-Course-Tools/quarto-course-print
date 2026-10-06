@@ -1,0 +1,3 @@
+# Bank
+
+One shared source and explicit assignments.

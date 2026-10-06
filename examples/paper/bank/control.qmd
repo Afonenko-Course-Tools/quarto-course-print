@@ -1,0 +1,11 @@
+# Shared control set {#sec-control-bank}
+
+:::: {#exr-control course-role="control"}
+## Explain the secure boundary
+
+CONTROL_CONDITION: Explain why a public starter excludes reference solutions.
+
+::: {#sol-control}
+CONTROL_SOLUTION: Separate client materials from grader tests.
+:::
+::::

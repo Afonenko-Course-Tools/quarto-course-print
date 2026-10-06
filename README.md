@@ -1,9 +1,9 @@
 # Quarto Course Print
 
-Print creates a public PDF from the current native Core `course-body-package-v1` public projection. The caller first requires a successful ordinary Quarto render and reads its current NativeRun, then calls Core `buildBodies` and passes `publicPackage` to Print. Retained sidecars are not a release inventory.
+Print creates a public PDF from the current native Core `course-body-package-v1` public projection. The caller uses Core `collectExport(courseRoot, {book, work, profiles})`, then `buildBodies(result, {projectRoot, courseId, work, includeClosed:true})`. Pass `publicPackage` to Print. Root course identity is declared once. Full source capture includes control QMD omitted from student HTML and requires no full HTML render.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-print@v0.1.1 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.0 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-print/entrypoints/export.ts \
   public-package.json course-a/sec-work-one output header.json
@@ -23,4 +23,16 @@ The full check installs real Core and Print payloads with `quarto add`, renders 
 
 ## Release installation
 
-Release `v0.1.1` matches the version in `_extension.yml`. Install the explicit tag shown above and commit the installed `_extensions` files in the course repository. To upgrade, install the next published tag with `quarto add`, review the changes and run the course checks. Published tags are immutable; corrections receive a new version and tag.
+Release `v0.2.0` matches the version in `_extension.yml`. Install the explicit tag shown above and commit the installed `_extensions` files in the course repository. To upgrade, install the next published tag with `quarto add`, review the changes and run the course checks. Published tags are immutable; corrections receive a new version and tag.
+
+
+## Shared task assignments
+
+Works use one authored `.task-items` list. The transport preserves `items`
+canonical keys and optional `requirements` keyed by local `exr-*` ID, with
+`required` or `optional` values. A lab/test/exam defaults to required; handout
+is an ungraded selection. Additional tasks do not replace required tasks.
+Print labels optional questions and applies no grading formula.
+
+See [self-contained paper demo](examples/paper/README.md) for ordinary native
+PDF plus two bank-based variants.

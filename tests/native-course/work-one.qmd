@@ -5,7 +5,7 @@ assessment:
 
 # Practice & review {#sec-work-one}
 
-::: {.assessment-items}
+::: {.task-items}
 1. @exr-manual
 2. @exr-choice
 :::

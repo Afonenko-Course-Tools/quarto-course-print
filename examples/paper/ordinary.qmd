@@ -1,0 +1,12 @@
+---
+title: Ordinary Quarto handout
+format: typst
+bibliography: references.bib
+---
+
+# Native material
+
+This ordinary handout uses Quarto directly, independently of the task bank.
+
+1. Explain why a student starter contains no reference answer.
+2. Compare the fixed assignments shown in the example [@demo].

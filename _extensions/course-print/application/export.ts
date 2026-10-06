@@ -50,7 +50,14 @@ function prepareValidatedPrint(
     validateBody(q.condition, p.resources);
     validateBody(q.publicAnswer, p.resources);
     blocks.push(
-      { t: "Header", c: [2, ["", [], []], [{ t: "Str", c: q.id }]] },
+      {
+        t: "Header",
+        c: [2, ["", [], []], [{
+          t: "Str",
+          c: q.id +
+            (w.requirements?.[q.id] === "optional" ? " (Optional)" : ""),
+        }]],
+      },
       ...structuredClone(q.condition),
       ...structuredClone(q.publicAnswer),
     );

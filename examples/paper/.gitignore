@@ -1,0 +1,11 @@
+_extensions/
+_site/
+artifacts/
+bank/_extensions/
+bank/_book/
+bank/_generated/
+.quarto/
+bank/.quarto/
+
+/.quarto/
+**/*.quarto_ipynb

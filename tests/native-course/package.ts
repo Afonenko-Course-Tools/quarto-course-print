@@ -13,6 +13,7 @@ const result = assembleRelease(
 );
 const bodies = await buildBodies(result, {
   projectRoot: Deno.cwd(),
+  work: "sec-work-one",
   includeClosed: run.profiles.includes("full"),
   sources: ["corpus.qmd", "work-one.qmd", "work-two.qmd"],
 });

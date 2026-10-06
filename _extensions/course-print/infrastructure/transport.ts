@@ -25,9 +25,10 @@ export interface PublicBodyPackage {
     id: string;
     key: string;
     source: string;
-    kind: "lab" | "test" | "exam";
+    kind: "lab" | "test" | "exam" | "handout";
     title: string;
     items: string[];
+    requirements?: Record<string, "required" | "optional">;
   }[];
   resources: {
     owner: string;
@@ -137,17 +138,38 @@ function validateProduction(
   }
   for (const w of p.works) {
     if (
-      !fields(w, ["owner", "id", "key", "source", "kind", "title", "items"]) ||
+      !fields(w, [
+        "owner",
+        "id",
+        "key",
+        "source",
+        "kind",
+        "title",
+        "items",
+        ...(record(w) && Object.hasOwn(w, "requirements")
+          ? ["requirements"]
+          : []),
+      ]) ||
       w.owner !== p.owner || typeof w.id !== "string" ||
-      !/^sec-[a-z0-9-]+$/.test(w.id) ||
+      !/^[a-z][a-z0-9-]*$/.test(w.id) ||
       w.key !== p.owner + "/" + w.id || !source(w.source) ||
       typeof w.kind !== "string" ||
-      !["lab", "test", "exam"].includes(w.kind) ||
+      !["lab", "test", "exam", "handout"].includes(w.kind) ||
       typeof w.title !== "string" || !w.title.trim() ||
       !array(w.items) || !w.items.length
     ) {
       fail("invalid production work transport");
     }
+    if (
+      Object.hasOwn(w, "requirements") && (
+        !record(w.requirements) ||
+        Object.entries(w.requirements).some(([id, requirement]) =>
+          !/^exr-[a-z0-9-]+$/.test(id) ||
+          !(w.items as unknown[]).includes(p.owner + "/" + id) ||
+          !["required", "optional"].includes(String(requirement))
+        )
+      )
+    ) fail("invalid task requirements");
   }
 }
 function assertPackage(p: unknown): asserts p is BodyPackage {

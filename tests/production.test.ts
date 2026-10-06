@@ -388,3 +388,37 @@ Deno.test("unknown legacy transport refuses malformed records and native URL slo
     rejects(() => preparePrint(malformed, p.works[0].key, {}), "ADAPTER");
   }
 });
+
+Deno.test("task requirements print optional labels and allow ungraded handouts", () => {
+  const p: any = sample();
+  p.works[0].requirements = { "exr-manual": "optional" };
+  const text = JSON.stringify(preparePrint(p, p.works[0].key, {}));
+  assert(text.includes("Optional"), "optional work member lost its status");
+  p.works[0].kind = "handout";
+  delete p.works[0].requirements;
+  preparePrint(p, p.works[0].key, {});
+});
+Deno.test("task requirements refuse unknown members and unsupported values", () => {
+  for (
+    const requirements of [
+      { "exr-absent": "optional" },
+      { "exr-manual": "recommended" },
+      [],
+      null,
+    ]
+  ) {
+    const p: any = sample();
+    p.works[0].requirements = requirements;
+    rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  }
+});
+Deno.test("explicit stable work ID need not use Quarto section prefix", () => {
+  const p: any = sample();
+  p.works[0].id = "lab-one";
+  p.works[0].key = "course-a/lab-one";
+  const doc = preparePrint(p, p.works[0].key, {});
+  assert(
+    JSON.stringify(doc).includes(p.works[0].title),
+    "native work title lost",
+  );
+});
