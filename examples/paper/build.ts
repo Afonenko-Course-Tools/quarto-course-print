@@ -10,7 +10,7 @@ async function extension(base: string, name: string) {
       if (!(e instanceof Deno.errors.NotFound)) throw e;
     }
   }
-  throw Error("Install " + name + " in " + base);
+  throw Error("Установите " + name + " в " + base);
 }
 const core = await extension(join(root, "bank"), "course-core");
 const { collectExport } = await import(
@@ -39,7 +39,7 @@ for (const variant of ["a", "b"]) {
     bodies.publicPackage,
     selected.courseId + "/" + selected.work,
     join(root, "artifacts/variant-" + variant),
-    { group: "Demo" },
+    { group: "Демонстрация" },
   );
 }
 const pdf = await new Deno.Command("quarto", {

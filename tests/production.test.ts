@@ -569,3 +569,13 @@ Deno.test("output alias refusal identifies output and preserves package before f
     await Deno.remove(root, { recursive: true });
   }
 });
+
+Deno.test("Print sets native Russian language metadata for generated captions", () => {
+  const p = sample();
+  const doc = preparePrint(p, p.works[0].key, {});
+  assert(
+    JSON.stringify(doc.meta.lang) ===
+      JSON.stringify({ t: "MetaString", c: "ru" }),
+    "native Print language is missing",
+  );
+});

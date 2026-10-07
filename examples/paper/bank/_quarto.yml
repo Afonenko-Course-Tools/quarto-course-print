@@ -1,10 +1,11 @@
+lang: ru
 project:
   type: book
   pre-render: _extensions/Afonenko-Course-Tools/course-core/entrypoints/pre.ts
   post-render: _extensions/Afonenko-Course-Tools/course-core/entrypoints/post.ts
   resources: ["!_generated/**"]
 book:
-  title: Shared exercise bank
+  title: Общий банк заданий
   chapters: [index.qmd, corpus.qmd, control.qmd, variant-a.qmd, variant-b.qmd]
 format: html
 filters: [course-core]

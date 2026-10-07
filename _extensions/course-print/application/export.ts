@@ -101,7 +101,11 @@ function prepareValidatedPrint(
     });
   };
   blocks.forEach(strip);
-  return { "pandoc-api-version": p.apiVersion, meta: {}, blocks };
+  return {
+    "pandoc-api-version": p.apiVersion,
+    meta: { lang: { t: "MetaString", c: "ru" } },
+    blocks,
+  };
 }
 export { type PrintOptions, type PrintResult } from "./materialize.ts";
 import { materialize, type PrintOptions } from "./materialize.ts";
