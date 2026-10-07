@@ -6,12 +6,13 @@ function externalFailure(
   stderr: string,
   cause?: unknown,
 ): Error {
+  const reason = cause instanceof Error ? cause.message : "";
   const error = new Error(
     `Print: внешний инструмент ${tool}${
       exitCode === undefined
         ? " не удалось запустить или завершить ввод/вывод"
         : ` завершился с кодом ${exitCode}`
-    }\n${stderr}${stdout}`,
+    }\n${stderr}${stdout}${reason ? "\n" + reason : ""}`,
     {
       cause: cause ??
         Object.assign(

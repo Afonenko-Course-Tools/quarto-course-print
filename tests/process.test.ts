@@ -70,3 +70,13 @@ Deno.test(
   "successful stderr is forwarded verbatim once and stdout returned",
   visibleSuccessStderr,
 );
+
+import { installedCliCause, visibleStartupCause } from "./process-runtime.ts";
+Deno.test(
+  "expected startup OS reason remains visible exactly once",
+  visibleStartupCause,
+);
+Deno.test(
+  "installed CLI preserves native startup cause once without stack",
+  installedCliCause,
+);
