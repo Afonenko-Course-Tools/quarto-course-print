@@ -3,7 +3,7 @@ assessment:
   kind: test
 ---
 
-# Variant B {#sec-variant-b}
+# Вариант Б {#sec-variant-b}
 
 ::: {.task-items}
 1. @exr-choice

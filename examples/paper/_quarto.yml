@@ -1,14 +1,15 @@
+lang: ru
 project:
   type: website
   output-dir: _site
   render: [index.qmd]
   resources: [artifacts/**]
 website:
-  title: Paper handouts
+  title: Печатные задания
   repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-print
   repo-subdir: examples/paper
   repo-actions: [source]
-  repo-branch: v0.2.0
+  repo-branch: demo-20261007-ru2
 format: html
 course:
   id: demo-paper

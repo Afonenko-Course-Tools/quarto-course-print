@@ -1,8 +1,5 @@
-import {
-  command,
-  fail,
-  type PrintResource,
-} from "../infrastructure/transport.ts";
+import { command } from "../infrastructure/process.ts";
+import { fail, type PrintResource } from "../infrastructure/transport.ts";
 import { copyIndex, encode, write } from "../infrastructure/files.ts";
 import type { FileDigest } from "./contracts.ts";
 
@@ -74,6 +71,9 @@ export async function compilePrint(
   timings.typst = performance.now() - typst;
   const pdf = await Deno.readFile(build + "/handout.pdf");
   if (new TextDecoder().decode(pdf.slice(0, 5)) !== "%PDF-") {
-    fail("missing valid PDF output");
+    fail("Компилятор не создал корректный PDF.", {
+      field: "handout.pdf",
+      hint: "Проверьте результат native компиляции.",
+    });
   }
 }

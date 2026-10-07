@@ -79,7 +79,7 @@ Deno.test("production schema rejects private question fields even outside select
     });
     rejects(
       () => preparePrint(p, p.works[0].key, {}),
-      "production question fields",
+      "поля публичной проекции",
     );
   }
 });
@@ -100,37 +100,37 @@ Deno.test("production schema rejects ambiguous/unknown contracts and opaque proo
 
 Deno.test("production public schema requires current transport identity and fixed work fields", () => {
   const invalid: [string, (p: any) => void][] = [
-    ["production package", (p) => {
+    ["поля или идентификатор публичного пакета", (p) => {
       p.owner = "";
     }],
-    ["production package", (p) => {
+    ["поля или идентификатор публичного пакета", (p) => {
       p.release = 4;
     }],
-    ["production package", (p) => {
+    ["поля или идентификатор публичного пакета", (p) => {
       p.apiVersion = [1, "23"];
     }],
-    ["production package", (p) => {
+    ["поля или идентификатор публичного пакета", (p) => {
       p.apiVersion = [];
     }],
-    ["production question", (p) => {
+    ["поля публичного вопроса", (p) => {
       p.questions[0].source = { closedKey: "secret" };
     }],
-    ["production question", (p) => {
+    ["поля публичного вопроса", (p) => {
       p.questions[0].visibility = "closed";
     }],
-    ["production question", (p) => {
+    ["поля публичного вопроса", (p) => {
       p.questions[0].answerType = "automatic";
     }],
-    ["production work", (p) => {
+    ["поля фиксированной работы", (p) => {
       p.works[0].owner = "another";
     }],
-    ["production work", (p) => {
+    ["поля фиксированной работы", (p) => {
       p.works[0].kind = "generated";
     }],
-    ["production work", (p) => {
+    ["поля фиксированной работы", (p) => {
       p.works[0].items = [];
     }],
-    ["production work", (p) => {
+    ["поля фиксированной работы", (p) => {
       p.works[0].source = ["tasks/work-one.qmd"];
     }],
   ];
@@ -346,7 +346,7 @@ Deno.test("production public package renders native PDF and exact current resour
       await Deno.writeTextFile(capture, JSON.stringify(p, null, 2) + "\n");
     }
     p.resources[0].data = btoa("changed without a refreshed hash");
-    await refusal({}, "resource hash mismatch");
+    await refusal({}, "SHA-256 ресурса");
     const current = await Deno.readFile(out + "/handout.pdf");
     assert(
       current.length === pdf.length &&
@@ -393,7 +393,10 @@ Deno.test("task requirements print optional labels and allow ungraded handouts",
   const p: any = sample();
   p.works[0].requirements = { "exr-manual": "optional" };
   const text = JSON.stringify(preparePrint(p, p.works[0].key, {}));
-  assert(text.includes("Optional"), "optional work member lost its status");
+  assert(
+    text.includes("Необязательное"),
+    "optional work member lost its status",
+  );
   p.works[0].kind = "handout";
   delete p.works[0].requirements;
   preparePrint(p, p.works[0].key, {});
@@ -420,5 +423,159 @@ Deno.test("explicit stable work ID need not use Quarto section prefix", () => {
   assert(
     JSON.stringify(doc).includes(p.works[0].title),
     "native work title lost",
+  );
+});
+
+Deno.test("external compiler refusal preserves foreign diagnostics before final PDF write", async () => {
+  const root = await Deno.makeTempDir();
+  const oldPath = Deno.env.get("PATH")!;
+  try {
+    await Deno.writeTextFile(
+      root + "/quarto",
+      '#!/bin/sh\nprintf "FOREIGN.OUT\\n"\nprintf "FOREIGN.ID detail\\n" >&2\nexit 9\n',
+    );
+    await Deno.chmod(root + "/quarto", 0o755);
+    Deno.env.set("PATH", root + ":" + oldPath);
+    const p = sample();
+    try {
+      await renderPrint(p, p.works[0].key, root + "/out", {}, {});
+      throw Error("expected compiler refusal");
+    } catch (error) {
+      const e = error as Error & {
+        exitCode: number;
+        stdout: string;
+        stderr: string;
+      };
+      assert(e.name === "ExternalToolFailure" && e.exitCode === 9, String(e));
+      assert(
+        e.stdout === "FOREIGN.OUT\n" && e.stderr === "FOREIGN.ID detail\n",
+        "lost compiler streams",
+      );
+      assert(e.cause !== undefined, "lost compiler cause");
+    }
+    let missing = false;
+    try {
+      await Deno.stat(root + "/out/handout.pdf");
+    } catch (e) {
+      missing = e instanceof Deno.errors.NotFound;
+    }
+    assert(missing, "external refusal wrote a final PDF");
+  } finally {
+    Deno.env.set("PATH", oldPath);
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("own guards identify Print source question field and repair hint", () => {
+  const cases: [string, (p: any) => void][] = [
+    ["closedKey", (p) => {
+      p.questions[0].closedKey = "PRIVATE";
+    }],
+    ["condition", (p) => {
+      p.questions[0].condition = [{ t: "RawBlock", c: ["html", "bad"] }];
+    }],
+    ["condition", (p) => {
+      p.questions[0].condition = [{
+        t: "Link",
+        c: [["", [], []], [], ["#closed", ""]],
+      }];
+    }],
+  ];
+  for (const [field, change] of cases) {
+    const p: any = sample();
+    change(p);
+    try {
+      preparePrint(p, p.works[0].key, {});
+      throw Error("expected refusal");
+    } catch (error) {
+      const e = error as Error & { code: string };
+      assert(
+        e.name === "ExtensionDiagnostic" && e.code === "ADAPTER",
+        String(e),
+      );
+      for (
+        const part of [
+          "Print",
+          "tasks/corpus.qmd",
+          "exr-manual",
+          field,
+          "Подсказка:",
+        ]
+      ) assert(e.message.includes(part), `missing ${part}: ${e.message}`);
+      assert(!e.message.includes("PRIVATE"), "private value leaked");
+    }
+  }
+});
+Deno.test("resource encoding and hash refusals retain source resource field and foreign cause", async () => {
+  for (const [data, field] of [["%%", "data"], ["", "sha256"]]) {
+    const p: any = sample();
+    p.resources = [{
+      owner: p.owner,
+      source: "assets/data.txt",
+      effectiveBase: "tasks/corpus.qmd",
+      target: "resources/course-a/data.txt",
+      sha256: "a".repeat(64),
+      data,
+      visibility: "public",
+    }];
+    try {
+      await renderPrint(p, p.works[0].key, "/no-output", {}, {});
+      throw Error("expected refusal");
+    } catch (error) {
+      const e = error as Error & { code: string };
+      assert(
+        e.name === "ExtensionDiagnostic" && e.code === "ADAPTER",
+        String(e),
+      );
+      for (
+        const part of [
+          "Print",
+          "assets/data.txt",
+          "resources/course-a/data.txt",
+          field,
+          "Подсказка:",
+        ]
+      ) assert(e.message.includes(part), `missing ${part}`);
+      if (field === "data") {
+        assert(e.cause instanceof Error, "encoding cause discarded");
+      }
+    }
+  }
+});
+Deno.test("output alias refusal identifies output and preserves package before final PDF", async () => {
+  const root = await Deno.makeTempDir();
+  try {
+    const p = sample(), before = JSON.stringify(p);
+    try {
+      await renderPrint(p, p.works[0].key, root + "/a/../out", {}, {});
+      throw Error("expected refusal");
+    } catch (error) {
+      const e = error as Error & { code: string };
+      assert(
+        e.code === "ADAPTER" && e.message.includes("Print") &&
+          e.message.includes("output") && e.message.includes(p.works[0].key),
+        String(e),
+      );
+    }
+    assert(JSON.stringify(p) === before, "mutated input");
+    let missing = false;
+    try {
+      await Deno.stat(root + "/out/handout.pdf");
+    } catch (e) {
+      missing = e instanceof Deno.errors.NotFound;
+    }
+    assert(missing, "output alias wrote PDF");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("Print sets native Russian language metadata for generated captions", () => {
+  const p = sample();
+  const doc = preparePrint(p, p.works[0].key, {});
+  assert(
+    JSON.stringify(doc.meta.lang) ===
+      JSON.stringify({ t: "MetaString", c: "ru" }),
+    "native Print language is missing",
   );
 });

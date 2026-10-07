@@ -1,7 +1,3 @@
-> Исторический план/исследование. Актуальный маршрут от 8 октября 2026: [план владельца](2026-10-08-implementation.md).
-> Исходный текст сохранён без правок; его старые статусы и конфликтующие правила не действуют.
-> Нужные материалы сохранить в Git до удаления из активной ветки.
-
 # План рефакторинга диагностики Print — 7 октября 2026
 
 Для исполнения: subagent-driven-development либо executing-plans по выбранному
@@ -36,13 +32,13 @@ stderr и причину с tool/exitCode/stdout/stderr при отказе. Bod
 сокращённые transport.ts/files.ts относятся к infrastructure, materialize.ts/
 contracts.ts/compiler.ts — к application.
 
-- [ ] Fake compiler с внешним ID, stdout/stderr и nonzero: причина сохранена,
+- [x] Fake compiler с внешним ID, stdout/stderr и nonzero: причина сохранена,
   конечный PDF не появился; exit 0 с stderr не превращается в авторскую ошибку.
-- [ ] Перенести только subprocess-функцию и обновить её импорты; ресурсные/AST
+- [x] Перенести только subprocess-функцию и обновить её импорты; ресурсные/AST
   предикаты оставить в transport. Никакого нового framework и сравнения stderr regex.
-- [ ] Выполнить `deno test --no-config --no-lock --no-npm --cached-only --deny-net --allow-read --allow-write --allow-run --allow-env tests/process.test.ts tests/production.test.ts`;
+- [x] Выполнить `deno test --no-config --no-lock --no-npm --cached-only --deny-net --allow-read --allow-write --allow-run --allow-env tests/process.test.ts tests/production.test.ts`;
   проверить прежние два native вызова компиляции и отсутствие запуска author hooks.
-- [ ] Проверка изменений и отдельный коммит минимального разделения ответственности.
+- [x] Проверка изменений и отдельный коммит минимального разделения ответственности.
 
 ## PR2 Контекст собственных ошибок и CLI
 
@@ -55,14 +51,14 @@ source/ID вопроса передаётся в validateBody/verifyResources п
 Широкий ADAPTER сохраняется; новый `PRINT.INPUT_INVALID` относится только
 к прежним неименованным CLI usage/read/JSON guards.
 
-- [ ] Дополнить export/production tests: ADAPTER с компонентом Print и field
+- [x] Дополнить export/production tests: ADAPTER с компонентом Print и field
   для closed fields, unsupported AST/link, hash/encoding; корректный пакет проходит.
   Output alias не изменяет вход и не создаёт конечный PDF.
-- [ ] Перевести сообщения, добавить вопрос/работу/ресурс и исправление.
+- [x] Перевести сообщения, добавить вопрос/работу/ресурс и исправление.
   CLI выводит ожидаемый diagnostic однократно; неизвестные exceptions сохраняют stack.
-- [ ] Выполнить `CORE=/home/tolya/course-tools/quarto-course bash tools/check.sh`
+- [x] Выполнить `CORE=/home/tolya/course-tools/quarto-course bash tools/check.sh`
   на обеих версиях Quarto: native full/student, Deno suites, installed CLI.
-- [ ] Проверка изменений и коммит; public package contract, resource selection и порядок записи прежние.
+- [x] Проверка изменений и коммит; public package contract, resource selection и порядок записи прежние.
 
 ## PR3 Документация и готовая группа
 
@@ -70,13 +66,38 @@ source/ID вопроса передаётся в validateBody/verifyResources п
 `examples/paper/_quarto.yml`, `examples/paper/bank/_quarto.yml`,
 index/ordinary/bank QMD и README группы. У bank собственный lang и русский book.title.
 
-- [ ] Русский справочник ID/смысла/исправления без ошибочных исходников;
+- [x] Русский справочник ID/смысла/исправления без ошибочных исходников;
   перевод активных собственных пояснений, native lang ru и source/repo/code-links
   по назначению. API/идентификаторы и foreign tool output сохраняются.
-- [ ] Проверить только корректные demo scenarios и реальные PDF;
+- [x] Проверить только корректные demo scenarios и реальные PDF;
   `CORE=/home/tolya/course-tools/quarto-course bash tools/check-demo.sh`.
-- [ ] Проверка изменений, PR и release из проверенного merged SHA; новый demo release
+- [x] Проверка локальных изменений и коммит документации.
+- [ ] Координатор: PR и release из проверенного merged SHA; новый demo release
   передать потребителю по [плану групп](../../../specs/course-examples-release-plan.md#план-обновления-документации-и-демонстраций-7-октября-2026).
 
 Полная текущая инструментальная проверка остаётся прежней; новое правило
 нулевых предупреждений или обязательное накопление ошибок не вводится.
+
+
+## Результат локального исполнения
+
+PR1–PR3 выполнены локально на ветке `refactor/diagnostics-ru-20261007`:
+`d28484e`, `5da7c1c`, `cd7a684`, `1a9837a`. Полный `tools/check.sh`
+на Quarto 1.10.18 и 1.11.5 подтвердил 39 тестов, установленный CLI и реальные PDF;
+`tools/check-demo.sh` на обеих версиях собрал три PDF русской демонстрации.
+Публикация и итоговые версии/закрепления выполняются координатором.
+
+Замечания независимого ревью I1/I2/M1 исправляются отдельным локальным коммитом:
+неизвестная ошибка запуска сохраняет идентичность и stack; stdout/stderr
+начинают читаться одновременно с записью stdin; ошибка закрытия stdin в bundled
+Deno не теряет реальный код завершения и native потоки. Успешный stderr передаётся
+без изменений ровно один раз. Регрессии `tests/process-runtime.ts` воспроизведены
+и проверены через `quarto run` обеих поставок с фактическим Deno 2.7.14.
+Тесты также покрывают большие встречные потоки без зависания.
+Подробное RED/GREEN и результаты повторных проверок сохраняет координатор
+в отчёте Print; повторное независимое ревью и выпуск остаются отдельными этапами.
+
+Повторная полная проверка после исправлений I1/I2/M1: `tools/check.sh`
+на обеих версиях Quarto с их bundled Deno 2.7.14 — 43 теста без отказов,
+установленный CLI, native full/student и реальные PDF. Прежние предупреждения
+student crossref сохраняются; warning policy не изменена.

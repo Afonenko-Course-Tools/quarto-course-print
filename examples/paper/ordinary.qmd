@@ -1,12 +1,13 @@
 ---
-title: Ordinary Quarto handout
+title: Обычный печатный материал Quarto
 format: typst
 bibliography: references.bib
+reference-section-title: Литература
 ---
 
-# Native material
+# Native материал
 
-This ordinary handout uses Quarto directly, independently of the task bank.
+Этот печатный материал собирается средствами Quarto независимо от банка заданий.
 
-1. Explain why a student starter contains no reference answer.
-2. Compare the fixed assignments shown in the example [@demo].
+1. Объясните, почему стартовый материал студента не содержит эталонного ответа.
+2. Сравните фиксированные назначения заданий в примере [@demo].

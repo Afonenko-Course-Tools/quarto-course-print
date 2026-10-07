@@ -6,3 +6,6 @@ answer-package.json
 header.json
 context.json
 __pycache__/
+
+# Native Quarto/Deno runtime cache; not authored source.
+/deno.lock

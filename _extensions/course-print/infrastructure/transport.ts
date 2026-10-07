@@ -1,3 +1,4 @@
+import { diagnostic, type DiagnosticContext } from "./diagnostics.ts";
 // Public native Body transport.
 export const productionSchema = "course-body-package-v1";
 export interface PublicBodyPackage {
@@ -42,8 +43,33 @@ export interface PublicBodyPackage {
 }
 export type BodyPackage = PublicBodyPackage;
 export type PrintResource = BodyPackage["resources"][number];
-export function fail(detail: string): never {
-  throw Error("ADAPTER: " + detail);
+export function fail(
+  detail: string,
+  context: DiagnosticContext = {},
+  cause?: unknown,
+): never {
+  throw diagnostic("ADAPTER", detail, {
+    hint: "Исправьте публичный пакет Body и повторите экспорт.",
+    ...context,
+  }, cause);
+}
+function context(
+  value: unknown,
+  field: string,
+  hint?: string,
+): DiagnosticContext {
+  return {
+    source: record(value) && typeof value.source === "string"
+      ? value.source
+      : undefined,
+    id: record(value) && typeof value.id === "string"
+      ? value.id
+      : record(value) && typeof value.target === "string"
+      ? value.target
+      : undefined,
+    field,
+    ...(hint ? { hint } : {}),
+  };
 }
 export const record = (v: unknown): v is Record<string, unknown> =>
   v !== null && typeof v === "object" && !array(v);
@@ -82,7 +108,9 @@ function validateProduction(
       typeof n !== "number" || !Number.isInteger(n) || n < 0
     )
   ) {
-    fail("invalid production package fields or identity");
+    fail("Некорректные поля или идентификатор публичного пакета.", {
+      field: "schema/owner/release/apiVersion/questions/works/resources",
+    });
   }
   for (const r of p.resources) {
     if (
@@ -102,7 +130,10 @@ function validateProduction(
           !/[\\\x00]/.test(r.effectiveBase))) ||
       typeof r.sha256 !== "string" || !/^[a-f0-9]{64}$/.test(r.sha256)
     ) {
-      fail("invalid production resource transport: actual bytes required");
+      fail(
+        "Некорректный транспорт ресурса: нужны фактические публичные байты.",
+        context(r, "owner/source/effectiveBase/target/sha256/data/visibility"),
+      );
     }
   }
   for (const q of p.questions) {
@@ -118,7 +149,26 @@ function validateProduction(
         "publicAnswer",
       ])
     ) {
-      fail("invalid production question fields: public projection required");
+      fail(
+        "Вопрос должен содержать только поля публичной проекции.",
+        context(
+          q,
+          record(q)
+            ? Object.keys(q).filter((key) =>
+              ![
+                "owner",
+                "id",
+                "key",
+                "source",
+                "visibility",
+                "answerType",
+                "condition",
+                "publicAnswer",
+              ].includes(key)
+            ).join(",") || "condition/publicAnswer"
+            : "questions",
+        ),
+      );
     }
     if (
       typeof q.id !== "string" || !/^exr-[a-z0-9-]+$/.test(q.id) ||
@@ -128,13 +178,19 @@ function validateProduction(
         q.answerType,
       )
     ) {
-      fail("invalid production question transport");
+      fail(
+        "Некорректные поля публичного вопроса.",
+        context(q, "id/source/visibility/answerType"),
+      );
     }
     if (!array(q.condition) || !array(q.publicAnswer)) {
-      fail("missing native body");
+      fail(
+        "Отсутствует native Body вопроса.",
+        context(q, "condition/publicAnswer"),
+      );
     }
-    validateBody(q.condition, p.resources);
-    validateBody(q.publicAnswer, p.resources);
+    validateBody(q.condition, p.resources, context(q, "condition"));
+    validateBody(q.publicAnswer, p.resources, context(q, "publicAnswer"));
   }
   for (const w of p.works) {
     if (
@@ -158,7 +214,10 @@ function validateProduction(
       typeof w.title !== "string" || !w.title.trim() ||
       !array(w.items) || !w.items.length
     ) {
-      fail("invalid production work transport");
+      fail(
+        "Некорректные поля фиксированной работы.",
+        context(w, "owner/id/key/source/kind/title/items"),
+      );
     }
     if (
       Object.hasOwn(w, "requirements") && (
@@ -169,13 +228,22 @@ function validateProduction(
           !["required", "optional"].includes(String(requirement))
         )
       )
-    ) fail("invalid task requirements");
+    ) {
+      fail(
+        "Некорректные требования к заданиям работы.",
+        context(w, "requirements"),
+      );
+    }
   }
 }
 function assertPackage(p: unknown): asserts p is BodyPackage {
-  if (!record(p)) fail("unsupported package or missing fields");
+  if (!record(p)) {
+    fail("Неподдерживаемый пакет или отсутствуют обязательные поля.", {
+      field: "schema/apiVersion/questions/works/resources",
+    });
+  }
   if (Object.hasOwn(p, "schema") && Object.hasOwn(p, "experimental")) {
-    fail("ambiguous package contract");
+    fail("Неоднозначный контракт пакета.", { field: "schema/experimental" });
   }
   const production = p.schema === productionSchema;
   if (
@@ -183,9 +251,15 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
     !array(p.apiVersion) ||
     !array(p.questions) || !array(p.works) ||
     !array(p.resources)
-  ) fail("unsupported package or missing fields");
+  ) {
+    fail("Неподдерживаемый пакет или отсутствуют обязательные поля.", {
+      field: "schema/apiVersion/questions/works/resources",
+    });
+  }
   if (typeof p.owner !== "string") {
-    fail("invalid owner/key or duplicate question");
+    fail("Некорректный владелец или ключ, либо вопрос повторяется.", {
+      field: "owner/key/questions",
+    });
   }
   if (production) {
     validateProduction({
@@ -202,10 +276,18 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
       !record(q) || q.owner !== p.owner || typeof q.id !== "string" ||
       typeof q.key !== "string" ||
       q.key !== p.owner + "/" + q.id || keys.has(q.key)
-    ) fail("invalid owner/key or duplicate question");
+    ) {
+      fail(
+        "Некорректный владелец или ключ, либо вопрос повторяется.",
+        context(q, "owner/key"),
+      );
+    }
     keys.add(q.key);
     if (!array(q.condition) || !array(q.publicAnswer)) {
-      fail("missing native body");
+      fail(
+        "Отсутствует native Body вопроса.",
+        context(q, "condition/publicAnswer"),
+      );
     }
   }
   for (const r of p.resources) {
@@ -219,7 +301,12 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
       r.target.split("/").some((part: string) =>
         part === "" || part === "." || part === ".."
       ) || targets.has(r.target)
-    ) fail("resource owner, visibility, path or collision");
+    ) {
+      fail(
+        "Неверный владелец, видимость, путь или повторяющийся ресурс.",
+        context(r, "owner/visibility/target"),
+      );
+    }
     targets.add(r.target);
   }
   const wk = new Set();
@@ -230,7 +317,12 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
       new Set(w.items).size !== w.items.length || w.items.some((k: unknown) =>
         typeof k !== "string" || !keys.has(k)
       )
-    ) fail("invalid fixed work");
+    ) {
+      fail(
+        "Некорректный состав фиксированной работы.",
+        context(w, "key/items"),
+      );
+    }
     wk.add(w.key);
   }
 }
@@ -242,7 +334,11 @@ const allowed = new Set(
   "Str Space SoftBreak LineBreak Emph Strong Underline Strikeout Superscript Subscript SmallCaps Quoted Code Math Link Image Span Para Plain BlockQuote OrderedList BulletList DefinitionList HorizontalRule Table Figure Header Div CodeBlock AlignLeft AlignRight AlignCenter AlignDefault ColWidth ColWidthDefault Decimal DefaultStyle DefaultDelim Period OneParen TwoParens InlineMath DisplayMath SingleQuote DoubleQuote"
     .split(" "),
 );
-export function validateBody(blocks: unknown[], resources: readonly unknown[]) {
+export function validateBody(
+  blocks: unknown[],
+  resources: readonly unknown[],
+  context: DiagnosticContext = {},
+) {
   const walk = (v: unknown): void => {
     if (array(v)) {
       v.forEach(walk);
@@ -251,17 +347,20 @@ export function validateBody(blocks: unknown[], resources: readonly unknown[]) {
     if (!record(v)) return;
     if (v.t) {
       if (typeof v.t !== "string" || !allowed.has(v.t)) {
-        fail("unsupported native node " + v.t);
+        fail("Неподдерживаемый native узел: " + v.t, {
+          ...context,
+          hint: "Используйте поддерживаемый публичный AST вместо этого узла.",
+        });
       }
       if (["Div", "Span", "Code", "CodeBlock", "Figure"].includes(v.t)) {
         if (!array(v.c) || !array(v.c[0])) {
-          fail("malformed native attributes");
+          fail("Некорректные native атрибуты.", context);
         }
         const a: unknown[] = v.c[0];
         if (
           typeof a[0] !== "string" || !array(a[1]) ||
           !a[1].every((s: unknown) => typeof s === "string")
-        ) fail("malformed native attributes");
+        ) fail("Некорректные native атрибуты.", context);
         if (
           a[0] || a[1].some((s: unknown) =>
             [
@@ -273,32 +372,44 @@ export function validateBody(blocks: unknown[], resources: readonly unknown[]) {
               "control",
             ].includes(String(s))
           )
-        ) fail("unsupported anchor or closed body marker");
+        ) fail("Неподдерживаемый якорь или закрытый маркер Body.", context);
       }
       if (v.t === "Header") {
         if (!array(v.c) || !array(v.c[1])) {
-          fail("malformed native header");
+          fail("Некорректный native заголовок.", context);
         }
-        if (typeof v.c[1][0] !== "string") fail("malformed native header");
+        if (typeof v.c[1][0] !== "string") {
+          fail("Некорректный native заголовок.", context);
+        }
       }
       if (v.t === "Math") {
         if (!array(v.c) || typeof v.c[1] !== "string") {
-          fail("malformed native math");
+          fail("Некорректная native формула.", context);
         }
         if (/\\label\s*\{|#eq-|\\ref\s*\{/.test(v.c[1])) {
-          fail("equation labels/references unsupported");
+          fail("Метки и ссылки формул не поддерживаются.", context);
         }
       }
       if (v.t === "Link" || v.t === "Image") {
         if (
           !array(v.c) || !array(v.c[2]) ||
           typeof v.c[2][0] !== "string"
-        ) fail("malformed native URL");
+        ) fail("Некорректный native URL.", context);
         const href: string = v.c[2][0];
         if (
           !resources.some((r) => record(r) && r.target === href) &&
           !(v.t === "Link" && /^https?:\/\//.test(href))
-        ) fail("unmapped, closed or unsupported link " + href);
+        ) {
+          fail(
+            "Ссылка не сопоставлена с публичным ресурсом, закрыта или не поддерживается: " +
+              href,
+            {
+              ...context,
+              hint:
+                "Выберите сопоставленный публичный ресурс либо HTTP(S)-ссылку.",
+            },
+          );
+        }
       }
     }
     for (const x of Object.values(v)) {
@@ -311,52 +422,38 @@ export function validateBody(blocks: unknown[], resources: readonly unknown[]) {
   };
   walk(blocks);
 }
-export async function verifyResources(p: BodyPackage) {
+export async function verifyResources(
+  p: BodyPackage,
+  related?: DiagnosticContext["related"],
+) {
   for (const r of p.resources) {
     let bytes: Uint8Array;
     try {
       bytes = Uint8Array.from(atob(r.data), (c) => c.charCodeAt(0));
-    } catch {
-      fail("bad resource encoding");
+    } catch (cause) {
+      fail("Некорректная кодировка ресурса.", {
+        ...context(r, "data", "Передайте фактические байты ресурса в Base64."),
+        related,
+      }, cause);
     }
     const hash = Array.from(
       new Uint8Array(
         await crypto.subtle.digest("SHA-256", new Uint8Array(bytes)),
       ),
     ).map((x) => x.toString(16).padStart(2, "0")).join("");
-    if (hash !== r.sha256) fail("resource hash mismatch");
+    if (hash !== r.sha256) {
+      fail("SHA-256 ресурса не соответствует его байтам.", {
+        ...context(r, "sha256", "Обновите SHA-256 по текущим байтам ресурса."),
+        related,
+      });
+    }
   }
 }
-export async function command(
-  cmd: string,
-  args: string[],
-  input?: string,
-  cwd?: string,
-) {
-  const p = new Deno.Command(cmd, {
-    args,
-    cwd,
-    stdin: input === undefined ? "null" : "piped",
-    stdout: "piped",
-    stderr: "piped",
-  }).spawn();
-  if (input !== undefined) {
-    const w = p.stdin.getWriter();
-    await w.write(new TextEncoder().encode(input));
-    await w.close();
-  }
-  const out = await p.output();
-  if (!out.success) {
-    fail(
-      new TextDecoder().decode(out.stderr) +
-        new TextDecoder().decode(out.stdout),
-    );
-  }
-  return new TextDecoder().decode(out.stdout);
-}
-
 // Only native URL slots select files; ordinary prose is never a resource request.
-export function resourceTargets(value: unknown): Set<string> {
+export function resourceTargets(
+  value: unknown,
+  context: DiagnosticContext = {},
+): Set<string> {
   const targets = new Set<string>();
   const walk = (node: unknown): void => {
     if (!node || typeof node !== "object") return;
@@ -369,7 +466,7 @@ export function resourceTargets(value: unknown): Set<string> {
       if (
         !array(node.c) || !array(node.c[2]) ||
         typeof node.c[2][0] !== "string"
-      ) fail("malformed native URL");
+      ) fail("Некорректный native URL.", context);
       targets.add(node.c[2][0]);
     }
     for (const child of Object.values(node)) {
