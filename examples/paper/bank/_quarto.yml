@@ -6,7 +6,7 @@ project:
   resources: ["!_generated/**"]
 book:
   title: Общий банк заданий
-  chapters: [index.qmd, corpus.qmd, control.qmd, variant-a.qmd, variant-b.qmd]
+  chapters: [index.qmd, corpus.qmd]
 format: html
 filters: [course-core]
 bibliography: ../references.bib
