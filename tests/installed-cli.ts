@@ -89,7 +89,7 @@ async function check(repo: string, packagePath: string) {
       `${consumer}/output/handout.pdf`,
       "-",
     ]);
-    for (const token of ["TLS", "Installed", "Name", "2026-10-01"]) {
+    for (const token of ["TLS", "Installed", "ФИО", "2026-10-01"]) {
       assert(text.includes(token), token);
     }
     for (const secret of ["TEACHER_SECRET", "GRADING_SECRET", "closedKey"]) {
@@ -125,7 +125,7 @@ async function check(repo: string, packagePath: string) {
     }).output();
     assert(
       !failed.success &&
-        new TextDecoder().decode(failed.stderr).includes("hash mismatch"),
+        new TextDecoder().decode(failed.stderr).includes("SHA-256 ресурса"),
       "damaged Body accepted",
     );
     assert(

@@ -1,3 +1,4 @@
+import type { DiagnosticContext } from "./diagnostics.ts";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { fail } from "./transport.ts";
 import type { FileDigest } from "../application/contracts.ts";
@@ -21,9 +22,13 @@ export function safeRelative(path: unknown): path is string {
     !isAbsolute(path) &&
     !path.split("/").some((x) => !x || x === "." || x === "..");
 }
-export async function safePath(path: string) {
+export async function safePath(path: string, context: DiagnosticContext = {}) {
   if (path.split(/[\\/]/).some((p) => p === "." || p === "..")) {
-    fail("destination aliases unsupported");
+    fail("Путь назначения содержит сегмент «.» или «..».", {
+      ...context,
+      source: path,
+      hint: "Укажите прямой путь без сегментов «.» и «..».",
+    });
   }
   const absolute = resolve(path);
   for (let p = absolute;; p = dirname(p)) {
@@ -32,7 +37,11 @@ export async function safePath(path: string) {
       // Detect links anywhere in the existing prefix without requesting read
       // permission for ancestors outside an installed consumer's sandbox.
       if (existing.isSymlink || resolve(await Deno.realPath(p)) !== p) {
-        fail("symlink destination/input");
+        fail("Вход или назначение проходит через символическую ссылку.", {
+          ...context,
+          source: path,
+          hint: "Укажите прямой путь без символических ссылок.",
+        });
       }
       break;
     }
@@ -44,14 +53,24 @@ export async function files(root: string, prefix = ""): Promise<FileDigest[]> {
   const result: FileDigest[] = [];
   for await (const e of Deno.readDir(root + (prefix ? "/" + prefix : ""))) {
     const name = prefix ? prefix + "/" + e.name : e.name;
-    if (!safeRelative(name) || e.isSymlink) fail("unsafe recipe/artifact file");
+    if (!safeRelative(name) || e.isSymlink) {
+      fail("Небезопасный файл рецепта или артефакта.", {
+        source: root + "/" + name,
+        field: "assets",
+      });
+    }
     if (e.isDirectory) result.push(...await files(root, name));
     else if (e.isFile) {
       result.push({
         path: name,
         sha256: await digest(await Deno.readFile(root + "/" + name)),
       });
-    } else fail("unsupported recipe/artifact file");
+    } else {
+      fail("Тип файла рецепта или артефакта не поддерживается.", {
+        source: root + "/" + name,
+        field: "assets",
+      });
+    }
   }
   return result.sort((a, b) => a.path.localeCompare(b.path, "en"));
 }
@@ -81,7 +100,11 @@ export async function copyIndex(
   for (const f of index) {
     const bytes = await Deno.readFile(source + "/" + f.path);
     if (await digest(bytes) !== f.sha256) {
-      fail("input changed during materialization");
+      fail("Входной файл изменился во время материализации.", {
+        source: source + "/" + f.path,
+        field: "sha256",
+        hint: "Повторите экспорт с неизменным рецептом.",
+      });
     }
     await write(dest + "/" + f.path, bytes);
   }

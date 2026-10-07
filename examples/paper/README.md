@@ -1,20 +1,17 @@
-# Paper handouts
+# Печатные задания
 
-From this folder install Core into the bank and the adapter into the course root:
+Установите Core в банк, а Print — в корень демонстрации:
 
 ```sh
 cd bank
-quarto add Afonenko-Course-Tools/quarto-course@v3.0.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course@v3.0.2 --no-prompt
 cd ..
-quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.1 --no-prompt
 quarto run build.ts
 ```
 
-The group pins these releases. Local source checks run `CORE=/absolute/path/to/quarto-course bash tools/check-demo.sh`
-from the producer repository root. The course ID is declared once at
-the course root; export explicitly selects `bank` and each variant. Default
-`full` is a demo policy. No live LMS exchange is claimed. Sources/resources
-inside this folder are sufficient; central documentation receives ready output.
+Демонстрация закрепляет эти выпуски. Локальная проверка исходников запускается командой `CORE=/absolute/path/to/quarto-course bash tools/check-demo.sh` из корня репозитория Print. Идентификатор курса объявлен один раз в корне; экспорт явно выбирает `bank` и каждый вариант. Профиль `full` по умолчанию принят для демонстрации. Обмен с действующей LMS не проверяется. Исходников и ресурсов этой папки достаточно; центральная документация получает готовый результат.
 
-The ready artifact is published separately in immutable release `demo-20261007`
-from the same merged revision. `BUILD.json` records the exact commit and dependencies.
+Корневая страница и банк имеют native `lang: ru`. Обычный материал собирается Quarto непосредственно, а варианты А и Б — из публичного Body общего банка. Неназначенное задание корректно и отсутствует в обеих выдачах. Условие контрольного задания доступно выбранному экспорту; эталонное решение остаётся вне печатного результата. Ссылка на исходники ведёт в эту папку репозитория; готовые PDF доступны на странице демонстрации.
+
+Готовый артефакт публикуется отдельно в неизменяемом выпуске `demo-20261007-ru1` из той же объединённой ревизии. `BUILD.json` фиксирует точный коммит и зависимости. См. [диагностику Print](../../docs/diagnostics.md).

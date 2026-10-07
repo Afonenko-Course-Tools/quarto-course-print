@@ -3,7 +3,7 @@ assessment:
   kind: test
 ---
 
-# Variant A {#sec-variant-a}
+# Вариант А {#sec-variant-a}
 
 ::: {.task-items}
 1. @exr-manual

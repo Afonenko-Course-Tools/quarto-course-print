@@ -1,14 +1,13 @@
-# Public native Body transport
+# Публичный native транспорт Body
 
-`schema: course-body-package-v1` contains exactly `owner`, `release`, `apiVersion`, `questions`, `works`, and `resources`. `owner` is the Course namespace; `release` is an author label.
+Пакет `schema: course-body-package-v1` содержит ровно `owner`, `release`, `apiVersion`, `questions`, `works` и `resources`. `owner` задаёт пространство имён Course, `release` — авторскую метку.
 
-Questions contain canonical `owner/id` keys, a current source, public visibility, an answer type, and native Pandoc condition/publicAnswer blocks. No private fields are permitted, including on questions outside the selected work. Works bind unique canonical questions and include source, kind, title and an explicit stable work ID (`^[a-z][a-z0-9-]*$`).
+Вопрос содержит канонический ключ `owner/id`, текущий `source`, публичную видимость, тип ответа и native блоки Pandoc `condition`/`publicAnswer`. Закрытые поля запрещены, включая вопросы вне выбранной работы. Работа связывает уникальные канонические вопросы и содержит `source`, `kind`, `title` и явный устойчивый ID (`^[a-z][a-z0-9-]*$`).
 
-Resources contain owner, source, effectiveBase, target, SHA-256, base64 bytes and public visibility. The producer resolves the actual source/effective base and rewrites native URL slots to the exact project-relative target. effectiveBase may be an absolute producer context; Print never opens it. Targets must be safe relative paths without aliases, hidden/service directories or source files. Only Image/Link slots select files; prose is not selection.
+Ресурс содержит `owner`, `source`, `effectiveBase`, `target`, SHA-256, байты Base64 и публичную видимость. Производитель разрешает фактический исходник относительно его базы и переписывает native URL на точный путь относительно проекта. `effectiveBase` может быть абсолютным контекстом производителя; Print не открывает его. `target` — безопасный относительный путь без псевдонимов, скрытых или служебных каталогов и файлов исходников. Ресурсы выбирают только адреса Image/Link; упоминание имени в тексте ничего не выбирает.
 
-Core validates authored and generated declarations before student projection. The caller checks successful native completion and supplies `buildBodies(...).publicPackage`. Print checks closed-field shape and byte integrity, then compiles native Pandoc/Typst. It cannot reconstruct fresh producer results from an old JSON package.
+Core проверяет авторские и сгенерированные объявления до студенческой проекции. Вызывающий код проверяет успешное native завершение и передаёт `buildBodies(...).publicPackage`. Print проверяет отсутствие закрытых полей и целостность байтов, затем компилирует Pandoc/Typst. Старый JSON-пакет не позволяет восстановить свежий результат производителя.
 
-Works allow kind handout as an ungraded selection, and optional requirements
-map local exr-ID to required/optional. Unknown members/values fail before PDF.
-Selection happens in Core before bodies/resources are validated. Full export
-source capture is independent of student HTML inclusion.
+Работа с `kind: handout` является подборкой без оценивания. Необязательная карта `requirements` сопоставляет локальные ID `exr-*` со значениями `required`/`optional`. Неизвестные участники и значения отклоняются до PDF. Core выбирает работу до проверки её Body и ресурсов. Полный захват исходников не зависит от включения страниц в студенческий HTML.
+
+[Диагностика Print](diagnostics.md) поясняет собственные отказы транспорта, контекст полей и сохранение внешних причин. Источник и ID обозначают входной объект; позиции временного JSON не выдаются за строки QMD.

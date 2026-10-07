@@ -1,18 +1,19 @@
 ---
 code-links:
-  - text: Source example folder
+  - text: Исходники демонстрации
     icon: github
-    href: https://github.com/Afonenko-Course-Tools/quarto-course-print/tree/v0.2.0/examples/paper
+    href: https://github.com/Afonenko-Course-Tools/quarto-course-print/tree/demo-20261007-ru1/examples/paper
 ---
 
-# Paper handouts
+# Печатные задания
 
-One bank, two fixed work assignments and an unassigned exercise. Control QMD
-is excluded from the student website but selected export receives its condition.
-Demonstration full answers are intentionally public in source and local full render.
+Один банк, два фиксированных варианта работы и отдельное неназначенное задание.
+Контрольный QMD исключён из студенческого сайта, но выбранная работа получает
+его условие при экспорте. Демонстрационные полные ответы открыты в исходниках
+и локальной полной сборке.
 
-[Ordinary PDF](artifacts/ordinary.pdf)
+[Обычный PDF](artifacts/ordinary.pdf)
 
-[Variant A PDF](artifacts/variant-a/handout.pdf)
+[PDF варианта А](artifacts/variant-a/handout.pdf)
 
-[Variant B PDF](artifacts/variant-b/handout.pdf)
+[PDF варианта Б](artifacts/variant-b/handout.pdf)

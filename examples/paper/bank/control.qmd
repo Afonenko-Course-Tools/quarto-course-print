@@ -1,11 +1,11 @@
-# Shared control set {#sec-control-bank}
+# Общий набор контрольных заданий {#sec-control-bank}
 
 :::: {#exr-control course-role="control"}
-## Explain the secure boundary
+## Объясните границу доступа
 
-CONTROL_CONDITION: Explain why a public starter excludes reference solutions.
+Объясните, почему публичные стартовые материалы не содержат эталонных решений.
 
 ::: {#sol-control}
-CONTROL_SOLUTION: Separate client materials from grader tests.
+Материалы студента должны быть отделены от проверочных тестов.
 :::
 ::::

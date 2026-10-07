@@ -1,31 +1,31 @@
-# Questions {#sec-questions}
+# Вопросы {#sec-questions}
 
 :::: {#exr-manual}
-## Explain securely
+## Дайте объяснение
 
-Explain $x^2 + 1$ using {{literal}} and XML characters & < >.
+Объясните $x^2 + 1$, используя {{literal}} и символы XML & < >.
 
 | A | B |
 |---|---|
 | 1 | 2 |
 
-[Data](data.txt) and [reference](https://example.org/course#def-one).
+[Данные](data.txt) и [справочник](https://example.org/course#def-one).
 
-![Diagram](dot.png)
+![Диаграмма](dot.png)
 
 ::: {.grading-notes}
-GRADING_SECRET
+Оцените полноту объяснения и корректность записи формулы.
 :::
 ::::
 
 ::: {#sol-manual}
-TEACHER_SECRET manual explanation.
+Эталонное объяснение: выражение складывает квадрат числа и единицу.
 :::
 
 :::: {#exr-choice}
-## Choose protocol
+## Выберите протокол
 
-Choose the secure protocol.
+Выберите защищённый протокол.
 
 ::: {.answer type="single-choice"}
 - HTTP & XML
@@ -35,12 +35,12 @@ Choose the secure protocol.
 ::::
 
 ::: {#sol-choice .demo-sol}
-TEACHER_SECRET demo explanation.
+Демонстрационное объяснение: TLS защищает передаваемые данные.
 :::
 
 :::: {#exr-unused}
-## Wider bank
+## Дополнительное задание банка
 
-This unassigned native task contains <span>HTML-only content</span> and remains
-absent from selected deliveries. Its unsupported transport does not block a work.
+Это корректное native задание не назначено ни одному из двух вариантов.
+Объясните, как выбор работы ограничивает состав печатной выдачи.
 ::::
