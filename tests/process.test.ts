@@ -53,3 +53,20 @@ Deno.test("missing executable retains original failure cause", async () => {
     assert(e.tool === "/no-such-print-tool-20261007", "lost tool");
   }
 });
+
+import { earlyChildExit, unknownStartupFault } from "./process-runtime.ts";
+Deno.test(
+  "shell early exit retains real exit and streams with operational stdin cause",
+  earlyChildExit,
+);
+Deno.test(
+  "unknown startup error retains original identity and stack",
+  unknownStartupFault,
+);
+
+import { concurrentDrain, visibleSuccessStderr } from "./process-runtime.ts";
+Deno.test("output drains concurrently with large stdin", concurrentDrain);
+Deno.test(
+  "successful stderr is forwarded verbatim once and stdout returned",
+  visibleSuccessStderr,
+);
