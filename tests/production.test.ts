@@ -422,3 +422,43 @@ Deno.test("explicit stable work ID need not use Quarto section prefix", () => {
     "native work title lost",
   );
 });
+
+Deno.test("external compiler refusal preserves foreign diagnostics before final PDF write", async () => {
+  const root = await Deno.makeTempDir();
+  const oldPath = Deno.env.get("PATH")!;
+  try {
+    await Deno.writeTextFile(
+      root + "/quarto",
+      '#!/bin/sh\nprintf "FOREIGN.OUT\\n"\nprintf "FOREIGN.ID detail\\n" >&2\nexit 9\n',
+    );
+    await Deno.chmod(root + "/quarto", 0o755);
+    Deno.env.set("PATH", root + ":" + oldPath);
+    const p = sample();
+    try {
+      await renderPrint(p, p.works[0].key, root + "/out", {}, {});
+      throw Error("expected compiler refusal");
+    } catch (error) {
+      const e = error as Error & {
+        exitCode: number;
+        stdout: string;
+        stderr: string;
+      };
+      assert(e.name === "ExternalToolFailure" && e.exitCode === 9, String(e));
+      assert(
+        e.stdout === "FOREIGN.OUT\n" && e.stderr === "FOREIGN.ID detail\n",
+        "lost compiler streams",
+      );
+      assert(e.cause !== undefined, "lost compiler cause");
+    }
+    let missing = false;
+    try {
+      await Deno.stat(root + "/out/handout.pdf");
+    } catch (e) {
+      missing = e instanceof Deno.errors.NotFound;
+    }
+    assert(missing, "external refusal wrote a final PDF");
+  } finally {
+    Deno.env.set("PATH", oldPath);
+    await Deno.remove(root, { recursive: true });
+  }
+});

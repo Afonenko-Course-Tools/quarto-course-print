@@ -1,8 +1,5 @@
-import {
-  command,
-  fail,
-  type PrintResource,
-} from "../infrastructure/transport.ts";
+import { command } from "../infrastructure/process.ts";
+import { fail, type PrintResource } from "../infrastructure/transport.ts";
 import { copyIndex, encode, write } from "../infrastructure/files.ts";
 import type { FileDigest } from "./contracts.ts";
 

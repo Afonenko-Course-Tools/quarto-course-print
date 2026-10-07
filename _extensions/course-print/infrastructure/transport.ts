@@ -327,34 +327,6 @@ export async function verifyResources(p: BodyPackage) {
     if (hash !== r.sha256) fail("resource hash mismatch");
   }
 }
-export async function command(
-  cmd: string,
-  args: string[],
-  input?: string,
-  cwd?: string,
-) {
-  const p = new Deno.Command(cmd, {
-    args,
-    cwd,
-    stdin: input === undefined ? "null" : "piped",
-    stdout: "piped",
-    stderr: "piped",
-  }).spawn();
-  if (input !== undefined) {
-    const w = p.stdin.getWriter();
-    await w.write(new TextEncoder().encode(input));
-    await w.close();
-  }
-  const out = await p.output();
-  if (!out.success) {
-    fail(
-      new TextDecoder().decode(out.stderr) +
-        new TextDecoder().decode(out.stdout),
-    );
-  }
-  return new TextDecoder().decode(out.stdout);
-}
-
 // Only native URL slots select files; ordinary prose is never a resource request.
 export function resourceTargets(value: unknown): Set<string> {
   const targets = new Set<string>();
