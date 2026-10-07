@@ -23,22 +23,35 @@ function prepareValidatedPrint(
   header: PrintHeader,
 ): PrintDocument {
   const w = p.works.find((w) => w.key === work);
-  if (!w) fail("unknown work binding");
+  if (!w) {
+    fail("Работа не найдена в публичном пакете.", {
+      id: work,
+      field: "works",
+      hint: "Укажите ключ существующей фиксированной работы.",
+    });
+  }
   const blocks: unknown[] = [
     { t: "Header", c: [1, ["", [], []], [{ t: "Str", c: w.title }]] },
     para(
-      `Date: ${header.date ?? "________________"}    Group: ${
+      `Дата: ${header.date ?? "________________"}    Группа: ${
         header.group ?? "________________"
       }`,
     ),
-    para("Name: ____________________________________________________"),
+    para("ФИО: ____________________________________________________"),
   ];
   for (const key of w.items) {
     const q = p.questions.find((q) => q.key === key);
-    if (!q) fail("unknown question binding");
+    if (!q) {
+      fail("Вопрос работы не найден.", {
+        id: key,
+        field: "items",
+        related: [{ source: w.source, id: w.id }],
+      });
+    }
     if (q.visibility !== "public") {
       fail(
-        "closed question is unsupported",
+        "Закрытый вопрос не поддерживается.",
+        { source: q.source, id: q.id, field: "visibility" },
       );
     }
     if (
@@ -46,16 +59,32 @@ function prepareValidatedPrint(
       !["manual", "single-choice", "numeric", "multipart", "matching"].includes(
         q.answerType,
       )
-    ) fail("unsupported answer form");
-    validateBody(q.condition, p.resources);
-    validateBody(q.publicAnswer, p.resources);
+    ) {
+      fail("Форма ответа не поддерживается.", {
+        source: q.source,
+        id: q.id,
+        field: "answerType",
+      });
+    }
+    validateBody(q.condition, p.resources, {
+      source: q.source,
+      id: q.id,
+      field: "condition",
+      related: [{ source: w.source, id: w.id }],
+    });
+    validateBody(q.publicAnswer, p.resources, {
+      source: q.source,
+      id: q.id,
+      field: "publicAnswer",
+      related: [{ source: w.source, id: w.id }],
+    });
     blocks.push(
       {
         t: "Header",
         c: [2, ["", [], []], [{
           t: "Str",
           c: q.id +
-            (w.requirements?.[q.id] === "optional" ? " (Optional)" : ""),
+            (w.requirements?.[q.id] === "optional" ? " (Необязательное)" : ""),
         }]],
       },
       ...structuredClone(q.condition),
@@ -86,7 +115,10 @@ export async function renderPrint(
   const start = performance.now();
   const p = validatePackage(input);
   const doc = prepareValidatedPrint(p, work, header);
-  await verifyResources(p);
+  await verifyResources(p, [{
+    source: p.works.find((w) => w.key === work)?.source,
+    id: work,
+  }]);
   const selected = resourceTargets(doc.blocks);
   const used: PrintResource[] = p.resources.filter((r) =>
     selected.has(r.target)

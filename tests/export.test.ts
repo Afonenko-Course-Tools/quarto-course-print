@@ -30,7 +30,7 @@ Deno.test("public native document embeds header and fields, excludes all teacher
       "demo-sol",
     ]
   ) assert(!text.includes(s), s);
-  for (const s of ["Name", "Group", "Date", "TLS", "{{literal}}"]) {
+  for (const s of ["ФИО", "Группа", "Дата", "TLS", "{{literal}}"]) {
     assert(text.includes(s), s);
   }
 });
@@ -70,7 +70,7 @@ Deno.test("isolated default Quarto Typst PDF needs no QMD source or web build", 
     }).output();
     const text = new TextDecoder().decode(o.stdout);
     assert(
-      text.includes("TLS") && text.includes("Name") &&
+      text.includes("TLS") && text.includes("ФИО") &&
         !text.includes("TEACHER_SECRET"),
     );
   } finally {

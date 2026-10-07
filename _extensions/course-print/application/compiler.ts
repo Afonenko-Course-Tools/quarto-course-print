@@ -71,6 +71,9 @@ export async function compilePrint(
   timings.typst = performance.now() - typst;
   const pdf = await Deno.readFile(build + "/handout.pdf");
   if (new TextDecoder().decode(pdf.slice(0, 5)) !== "%PDF-") {
-    fail("missing valid PDF output");
+    fail("Компилятор не создал корректный PDF.", {
+      field: "handout.pdf",
+      hint: "Проверьте результат native компиляции.",
+    });
   }
 }

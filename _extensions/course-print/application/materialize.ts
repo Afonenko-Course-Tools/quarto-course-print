@@ -18,16 +18,17 @@ export type { PrintOptions, PrintResult } from "./contracts.ts";
 export async function materialize(
   doc: PrintDocument,
   resources: readonly PrintResource[],
-  _work: string,
+  work: string,
   out: string,
   options: PrintOptions,
   validationMs: number,
 ): Promise<PrintResult> {
   const started = performance.now(),
     timings: Record<string, number> = { validate: validationMs };
-  const destination = await safePath(out);
+  const destination = await safePath(out, { id: work, field: "output" });
   const assets = await safePath(
     options.assets ?? fileURLToPath(new URL("../assets", import.meta.url)),
+    { id: work, field: "assets" },
   );
   const assetIndex = await files(assets);
   await Deno.mkdir(dirname(destination), { recursive: true });
@@ -52,7 +53,11 @@ export async function materialize(
         await Deno.readTextFile(destination + "/public.json"),
       );
       if (!Array.isArray(old.blocks)) {
-        fail("malformed previous public document");
+        fail("Некорректный ранее записанный публичный документ.", {
+          source: destination + "/public.json",
+          id: work,
+          field: "blocks",
+        });
       }
       for (const target of resourceTargets(old.blocks)) {
         if (/^https?:\/\//.test(target)) continue;
@@ -61,17 +66,30 @@ export async function materialize(
           /(^|\/)(?:\.[^/]+|_extensions|_freeze|_generated)(\/|$)/.test(
             target,
           ) ||
-          /\.(?:qmd|md|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(target) ||
+          /\.(?:qmd|md|rmd|ipynb|ya?ml|lua|ts|cue|r|py|sh|toml)$/i.test(
+            target,
+          ) ||
           target === "public.json" ||
           target === "handout.pdf"
-        ) fail("unsafe previous resource target");
+        ) {
+          fail("Небезопасный путь прежнего ресурса.", {
+            source: destination + "/public.json",
+            id: target,
+            field: "blocks",
+          });
+        }
         await safePath(destination + "/" + target);
         oldResources.push(target);
       }
     }
     for (const r of resources) {
       if (r.target === "public.json" || r.target === "handout.pdf") {
-        fail("reserved Print output resource target");
+        fail("Ресурс занимает зарезервированный путь Print.", {
+          source: r.source,
+          id: r.target,
+          field: "target",
+          hint: "Выберите путь ресурса, отличный от public.json и handout.pdf.",
+        });
       }
     }
     const selected = [
@@ -79,7 +97,9 @@ export async function materialize(
       "public.json",
       ...resources.map((r) => r.target),
     ];
-    for (const name of selected) await safePath(destination + "/" + name);
+    for (const name of selected) {
+      await safePath(destination + "/" + name, { id: work, field: "output" });
+    }
     for (const target of oldResources) {
       if (
         !selected.includes(target) && await info(destination + "/" + target)
