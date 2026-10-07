@@ -2,7 +2,7 @@
 code-links:
   - text: Исходники демонстрации
     icon: github
-    href: https://github.com/Afonenko-Course-Tools/quarto-course-print/tree/demo-20261007-ru1/examples/paper
+    href: https://github.com/Afonenko-Course-Tools/quarto-course-print/tree/demo-20261007-ru2/examples/paper
 ---
 
 # Печатные задания

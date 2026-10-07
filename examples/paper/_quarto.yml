@@ -9,7 +9,7 @@ website:
   repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-print
   repo-subdir: examples/paper
   repo-actions: [source]
-  repo-branch: demo-20261007-ru1
+  repo-branch: demo-20261007-ru2
 format: html
 course:
   id: demo-paper

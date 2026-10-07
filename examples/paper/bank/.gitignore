@@ -1,2 +1,6 @@
 /.quarto/
 **/*.quarto_ipynb
+/_book/
+/_generated/
+/_extensions/
+/deno.lock
