@@ -1,0 +1,111 @@
+{
+  "type": "provenance",
+  "component": "course-print",
+  "status": "historical",
+  "sources": [
+    {
+      "source": "/home/tolya/course-tools/specs/course-change-plan.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/specs/course-change-plan.md",
+      "sha256": "8bafe4c4b7a9b693ad6c64712558d71a6a719722bcc99e1d0bf357965b24218e",
+      "bytes": 85567,
+      "modified": "2026-10-07T23:29:03.078283+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/specs/course-examples-release-plan.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/specs/course-examples-release-plan.md",
+      "sha256": "7ff128a08b4d88923e409c203405d644dd91c50ad017a9f628373c47973666fc",
+      "bytes": 25245,
+      "modified": "2026-10-07T23:29:03.079071+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/specs/2026-10-04-refactoring-analysis.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/specs/2026-10-04-refactoring-analysis.md",
+      "sha256": "c7c04d58d8174d4e3e33b1c70174b7c5009be71af3e9f8ea361eaec24276fb61",
+      "bytes": 32724,
+      "modified": "2026-10-07T23:29:03.076114+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/specs/quarto-tools-plan.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/specs/quarto-tools-plan.md",
+      "sha256": "2485df3eba93b328de3098ef9640e8af11347660c607aa409fb09a103a31fca8",
+      "bytes": 434313,
+      "modified": "2026-10-07T23:29:03.082535+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/refactoring-research-2026-10-07/RESULT.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/refactoring-research-2026-10-07/RESULT.md",
+      "sha256": "74e402c0a146067515884940d7c1a9a00f1f1e292ac90e3f2ca7074fbede8c2c",
+      "bytes": 8451,
+      "modified": "2026-10-07T09:51:06.130674+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/refactoring-research-2026-10-07/plan-validation.json",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/refactoring-research-2026-10-07/plan-validation.json",
+      "sha256": "b77a17b858a9c21347f0f697e067f309c257700256265c09f9a6503ae55d1a18",
+      "bytes": 162,
+      "modified": "2026-10-07T09:49:10.313059+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/implementation-2026-10-06/RESULT.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/RESULT.md",
+      "sha256": "bd9e6ceb8cf2cb54fb7a12ce292c15d4b21e5d8c45019ca56a0c91de9f474e25",
+      "bytes": 5985,
+      "modified": "2026-10-07T00:06:19.005344+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/2026-10-06-adapter-architecture.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/2026-10-06-adapter-architecture.md",
+      "sha256": "761cf1e85f206cd2a005620a0caf18fe2b6fe7a6de0b43ca32fda0ce9756f5a7",
+      "bytes": 8576,
+      "modified": "2026-10-06T22:25:30.694998+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/body-baseline/summary.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/body-baseline/summary.md",
+      "sha256": "8d76c8f20740e314f3318d77a4ab4068a00a8e3212e149bc5556156c74bc647e",
+      "bytes": 2245,
+      "modified": "2026-10-03T13:16:23.675368+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/fast-core-print/final-report.json",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/fast-core-print/final-report.json",
+      "sha256": "77e894ea47483ecca1c5f769b5f97d591f388f22eb1aac99920c04ef888afec1",
+      "bytes": 14793,
+      "modified": "2026-10-03T10:44:03.578698+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/fast-core-print/print-production-pure-stable.json",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/fast-core-print/print-production-pure-stable.json",
+      "sha256": "02269429f6561b746d96bd07621a2a928db140cb98999329159082a2f34d47a2",
+      "bytes": 614,
+      "modified": "2026-10-03T10:37:55.384294+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/implementation-2026-10-06/releases/quarto-course-print/v0.2.0/notes.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/releases/quarto-course-print/v0.2.0/notes.md",
+      "sha256": "8d56295380e2ad286bc9b400ec58e1a5476025a9e19c253cdd3eea45e5d7349e",
+      "bytes": 423,
+      "modified": "2026-10-06T22:25:02.316727+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    },
+    {
+      "source": "/home/tolya/course-tools/local-evidence/implementation-2026-10-06/releases/quarto-course-print/demo-20261007/notes.md",
+      "snapshot": "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/releases/quarto-course-print/demo-20261007/notes.md",
+      "sha256": "cca73e7cd4335223825c1449594742e6691a715ac16a145b0317c437799b8aa4",
+      "bytes": 373,
+      "modified": "2026-10-06T22:27:58.619624+00:00",
+      "scope": "Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo."
+    }
+  ]
+}

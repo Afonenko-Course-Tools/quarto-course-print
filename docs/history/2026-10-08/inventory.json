@@ -1,0 +1,157 @@
+{
+  "type": "inventory",
+  "component": "course-print",
+  "status": "historical",
+  "captured_at": "2026-10-07T23:40:37.038277+00:00",
+  "initial_checkout_branch": "main",
+  "preservation_branch": "feat/authoring-model-20261008",
+  "initial_head": "2c8bab9b96254bd4e8300a612a385f18c6b7f9ce",
+  "fetched_origin_main": "0d61ba7c8cf17af3a35230c7b6a2764b572d8da1",
+  "refs": [
+    {
+      "ref": "refs/heads/feat/authoring-model-20261008",
+      "sha": "2c8bab9b96254bd4e8300a612a385f18c6b7f9ce",
+      "upstream": null,
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/heads/feat/course-contract-20261006",
+      "sha": "dcd085edc62bee749f8d28eacf4c14c2a39774e1",
+      "upstream": "origin/feat/course-contract-20261006",
+      "main_only": 11,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/heads/feat/production-body-transport",
+      "sha": "1ae4f0c5697d415746c7fce94067b5a1e13db503",
+      "upstream": "origin/feat/production-body-transport",
+      "main_only": 23,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/heads/main",
+      "sha": "2c8bab9b96254bd4e8300a612a385f18c6b7f9ce",
+      "upstream": "origin/main",
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/HEAD",
+      "sha": "0d61ba7c8cf17af3a35230c7b6a2764b572d8da1",
+      "upstream": null,
+      "main_only": 0,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/feat/course-contract-20261006",
+      "sha": "dcd085edc62bee749f8d28eacf4c14c2a39774e1",
+      "upstream": null,
+      "main_only": 11,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/feat/course-system-final",
+      "sha": "913c4379b25054dd8a4aad08f5da99ceae27a604",
+      "upstream": null,
+      "main_only": 21,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/feat/versioned-releases",
+      "sha": "4b847e4e92ebd3d445759ffe7c8e4534efba12a1",
+      "upstream": null,
+      "main_only": 14,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/main",
+      "sha": "0d61ba7c8cf17af3a35230c7b6a2764b572d8da1",
+      "upstream": null,
+      "main_only": 0,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/refactor/native-quarto-20261005",
+      "sha": "726403d9025554da6b86ad01fe41c573208df7b9",
+      "upstream": null,
+      "main_only": 17,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/demo-20261007",
+      "sha": "2c8bab9b96254bd4e8300a612a385f18c6b7f9ce",
+      "upstream": null,
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/demo-20261007-ru1",
+      "sha": "049ad21f0625c79e57d8a23f8878a6ffcf5f0d62",
+      "upstream": null,
+      "main_only": 2,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/demo-20261007-ru2",
+      "sha": "0d61ba7c8cf17af3a35230c7b6a2764b572d8da1",
+      "upstream": null,
+      "main_only": 0,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/v0.1.1",
+      "sha": "ccb4e6523121a814605a59f0f663cfff5734d82f",
+      "upstream": null,
+      "main_only": 13,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/v0.2.0",
+      "sha": "2c8bab9b96254bd4e8300a612a385f18c6b7f9ce",
+      "upstream": null,
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/v0.2.1",
+      "sha": "049ad21f0625c79e57d8a23f8878a6ffcf5f0d62",
+      "upstream": null,
+      "main_only": 2,
+      "ref_only": 0
+    }
+  ],
+  "worktrees": [
+    {
+      "path": "/home/tolya/course-tools/quarto-course-print",
+      "porcelain": "worktree /home/tolya/course-tools/quarto-course-print\nHEAD 2c8bab9b96254bd4e8300a612a385f18c6b7f9ce\nbranch refs/heads/feat/authoring-model-20261008",
+      "status": "?? docs/history/\n?? docs/plans/\n",
+      "untracked": [
+        "docs/history/2026-10-08/snapshots/root/local-evidence/2026-10-06-adapter-architecture.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/body-baseline/summary.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/fast-core-print/final-report.json",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/fast-core-print/print-production-pure-stable.json",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/RESULT.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/releases/quarto-course-print/demo-20261007/notes.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/releases/quarto-course-print/v0.2.0/notes.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/refactoring-research-2026-10-07/RESULT.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/refactoring-research-2026-10-07/plan-validation.json",
+        "docs/history/2026-10-08/snapshots/root/specs/2026-10-04-refactoring-analysis.md",
+        "docs/history/2026-10-08/snapshots/root/specs/course-change-plan.md",
+        "docs/history/2026-10-08/snapshots/root/specs/course-examples-release-plan.md",
+        "docs/history/2026-10-08/snapshots/root/specs/quarto-tools-plan.md",
+        "docs/plans/2026-10-08-implementation.md",
+        "docs/plans/diagnostics-refactoring-plan.md"
+      ]
+    }
+  ],
+  "ignored_count": 204,
+  "ignored_categories": {
+    "cache: retained locally, reproducible": 14,
+    "installed dependency: retained locally": 85,
+    "generated result: retained locally": 105
+  },
+  "ignored_reviewed_separately": [],
+  "ignored_receipts": [],
+  "remote_note": "Fetched tags and origin refs on 2026-10-08; stale tracking refs retained for preservation. remote-heads.txt records live heads; old evidence does not establish present CI."
+}

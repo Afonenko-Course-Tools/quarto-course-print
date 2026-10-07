@@ -1,0 +1,20 @@
+{
+  "name": "print-production-pure-stable",
+  "cwd": "/home/tolya/course-tools/quarto-course-print",
+  "command": [
+    "/home/tolya/course-tools/local-tools/quarto-1.10.18/bin/tools/x86_64/deno",
+    "test",
+    "--no-config",
+    "--no-lock",
+    "--no-npm",
+    "--cached-only",
+    "--deny-net",
+    "--allow-read",
+    "--filter=/^production (public schema prints|schema rejects|public schema requires|provenance|transport|malformed)/",
+    "tests/production.test.ts"
+  ],
+  "exitCode": 0,
+  "wallSeconds": 0.267,
+  "cue": "v0.17.1",
+  "scope": "fast model/type/contract checks; no native course rendering"
+}
