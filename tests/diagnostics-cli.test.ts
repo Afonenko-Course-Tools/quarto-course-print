@@ -149,6 +149,10 @@ Deno.test("CLI emits semantic and external messages once without replacing forei
     await Deno.writeTextFile(root + "/p.json", JSON.stringify(p));
     let o = await cli([root + "/p.json", p.works[0].key, root + "/out"]);
     assert(
+      o.stderr.includes(root + "/p.json"),
+      "CLI lost the known input package path",
+    );
+    assert(
       !o.success && (o.stderr.match(/ADAPTER/g) ?? []).length === 1 &&
         !o.stderr.includes("at file:"),
       o.stderr,

@@ -50,7 +50,12 @@ try {
     error instanceof Error &&
     ["ExtensionDiagnostic", "ExternalToolFailure"].includes(error.name)
   ) {
-    console.error(error.message);
+    console.error(
+      error.message +
+        (error.name === "ExtensionDiagnostic" && source
+          ? `\nВходной пакет: ${source}`
+          : ""),
+    );
     Deno.exit(1);
   }
   throw error;
