@@ -4,9 +4,9 @@
 
 ```sh
 cd bank
-quarto add Afonenko-Course-Tools/quarto-course@v3.0.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course@v3.0.2 --no-prompt
 cd ..
-quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.1 --no-prompt
 quarto run build.ts
 ```
 
@@ -14,4 +14,4 @@ quarto run build.ts
 
 Корневая страница и банк имеют native `lang: ru`. Обычный материал собирается Quarto непосредственно, а варианты А и Б — из публичного Body общего банка. Неназначенное задание корректно и отсутствует в обеих выдачах. Условие контрольного задания доступно выбранному экспорту; эталонное решение остаётся вне печатного результата. Ссылка на исходники ведёт в эту папку репозитория; готовые PDF доступны на странице демонстрации.
 
-Готовый артефакт публикуется отдельно в неизменяемом выпуске `demo-20261007` из той же объединённой ревизии. `BUILD.json` фиксирует точный коммит и зависимости. См. [диагностику Print](../../docs/diagnostics.md).
+Готовый артефакт публикуется отдельно в неизменяемом выпуске `demo-20261007-ru1` из той же объединённой ревизии. `BUILD.json` фиксирует точный коммит и зависимости. См. [диагностику Print](../../docs/diagnostics.md).

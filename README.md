@@ -3,7 +3,7 @@
 Print создаёт публичный PDF из текущей native проекции Core `course-body-package-v1`. Вызывающий код использует Core `collectExport(courseRoot, {book, work, profiles})`, затем `buildBodies(result, {projectRoot, courseId, work, includeClosed:true})` и передаёт Print результат `publicPackage`. Идентификатор курса объявляется один раз в корне. Полный захват исходников включает контрольные QMD, исключённые из студенческого HTML, и не требует полной HTML-сборки.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.1 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-print/entrypoints/export.ts \
   public-package.json course-a/sec-work-one output header.json
@@ -23,7 +23,7 @@ CORE=../quarto-course bash tools/check.sh
 
 ## Установка выпуска
 
-Выпуск `v0.2.0` соответствует версии в `_extension.yml`. Установите указанный тег и сохраните установленные файлы `_extensions` в репозитории курса. Для обновления установите следующий опубликованный тег через `quarto add`, проверьте изменения и выполните проверки курса. Опубликованные теги неизменяемы; исправления получают новую версию и тег.
+Выпуск `v0.2.1` соответствует версии в `_extension.yml`. Установите указанный тег и сохраните установленные файлы `_extensions` в репозитории курса. Для обновления установите следующий опубликованный тег через `quarto add`, проверьте изменения и выполните проверки курса. Опубликованные теги неизменяемы; исправления получают новую версию и тег.
 
 ## Общие назначения заданий
 
