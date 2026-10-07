@@ -1,4 +1,13 @@
+---
+type: documentation
+component: course-print
+status: current
+updated: 2026-10-08
+---
+
 # Quarto Course Print
+
+[Индекс спецификаций](spec/index.md) различает действующий контракт, согласованную следующую модель и историю. Версия на выбранном ref читается из `_extensions/course-print/_extension.yml`; `main` после последнего выпуска — **unreleased**.
 
 Print создаёт публичный PDF из текущей native проекции Core `course-body-package-v1`. Вызывающий код использует Core `collectExport(courseRoot, {book, work, profiles})`, затем `buildBodies(result, {projectRoot, courseId, work, includeClosed:true})` и передаёт Print результат `publicPackage`. Идентификатор курса объявляется один раз в корне. Полный захват исходников включает контрольные QMD, исключённые из студенческого HTML, и не требует полной HTML-сборки.
 

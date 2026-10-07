@@ -1,4 +1,13 @@
+---
+type: specification
+component: course-print
+status: current
+updated: 2026-10-08
+---
+
 # Публичный native транспорт Body
+
+Общую модель банка и producer Body определяет [Core](../../quarto-course/docs/body-export.md). Этот документ описывает действующие правила потребителя на выбранном ref. [Индекс](../spec/index.md) отдельно связывает `accepted-next`; новый синтаксис пока не поддержан.
 
 Пакет `schema: course-body-package-v1` содержит ровно `owner`, `release`, `apiVersion`, `questions`, `works` и `resources`. `owner` задаёт пространство имён Course, `release` — авторскую метку.
 

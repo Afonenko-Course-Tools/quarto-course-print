@@ -11,11 +11,12 @@ updated: 2026-10-08
 
 Print: participant Body, native PDF, transport/Typst, resource/hash guards, paper demo.
 
-Исходные смешанные документы сохранены целиком в первом локальном коммите
+Исходные смешанные документы сохранены целиком в коммите `d1d78bebb9d26ca9890efca9b9a50de7c5cc7871`
 ветки `feat/authoring-model-20261008`; предметная часть владельца определяется
 планом от 8 октября. Старые ограничения и результаты не являются текущим
-контрактом и не подтверждают сегодняшний CI. После сохранения снимки и старые
-планы убираются из активной ветки; exact source/hash/mtime map остаётся
+контрактом и не подтверждают сегодняшний CI. После exact проверки байтов в Git прежние owner-планы и снимки
+удалены из активной ветки. Они восстанавливаются по сохранённым коммитам;
+exact source/hash/mtime map остаётся
 в [provenance.json](provenance.json), исходные refs/worktrees —
 в [inventory.json](inventory.json). Корневые файлы и пользовательские worktrees
 не удаляются и не изменяются.
@@ -44,3 +45,5 @@ Print: participant Body, native PDF, transport/Typst, resource/hash guards, pape
 
 Локальные старые ветки сохраняют свои SHA и уникальные коммиты в refs;
 удаление/архивация веток и worktrees относится только к финальному шагу 17.
+
+Снимки восстанавливаются командой `git show d1d78bebb9d26ca9890efca9b9a50de7c5cc7871:docs/history/2026-10-08/snapshots/root/<исходный-путь>`. Первоначальные owner-планы доступны в том же коммите по прежнему пути `docs/plans/`; свежая upstream версия сохраняется также в origin/main и merge history.
