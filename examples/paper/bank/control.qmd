@@ -1,6 +1,6 @@
 # Общий набор контрольных заданий {#sec-control-bank}
 
-:::: {#exr-control course-role="control"}
+:::: {#exr-control course-role="control" difficulty="intermediate" time="10" statement-visibility="restricted"}
 ## Объясните границу доступа
 
 Объясните, почему публичные стартовые материалы не содержат эталонных решений.

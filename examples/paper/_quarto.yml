@@ -1,3 +1,4 @@
+fail-if-warnings: true
 lang: ru
 project:
   type: website

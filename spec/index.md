@@ -13,6 +13,7 @@ updated: 2026-10-08
 
 | Документ | type | component | status | Нормативный владелец и область |
 | --- | --- | --- | --- | --- |
+| [Подготовка авторства](../docs/authoring-next.md) | authoring-guide | course-print | accepted-next | Миграция примеров и граница consumer следующего выпуска |
 | [Print: действующий контракт](../docs/public-body.md) | specification | course-print | current | participant Body → native Pandoc/Typst PDF; закрытые поля, ресурсы и целостность |
 | [Диагностика](../docs/diagnostics.md) | reference | course-print | current | Собственные ID и внешние причины этого адаптера |
 | [Body Core](../../quarto-course/docs/body-export.md) | specification | course-core | current | Общий producer transport и selected source input |
