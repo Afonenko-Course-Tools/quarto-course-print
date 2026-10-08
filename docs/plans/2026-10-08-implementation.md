@@ -7,10 +7,11 @@ updated: 2026-10-08
 
 # Print: план владельца
 
-Статус: шаги 1–2 выполнены; runtime следующей модели ещё не реализован. Выполнять пункт 8 и затем
+Статус: текущие runtime и авторские документы подготовлены на рабочей ветке;
+финальные совместные проверки, merge/CI и выпуск остаются отдельными gates. Выполнять пункт 8 и затем
 пункты 12–13/17–18 [линейного плана](../../../quarto-course/docs/plans/2026-10-08-course-tools-implementation.md).
-[Целевой контракт Core](../../../quarto-course/spec/authoring-model-next.md)
-задаёт поля банка/работ/назначений. Quarto 1.11.5 / CUE 0.17.1;
+[Текущие контракты Core](../../../quarto-course/spec/index.md)
+задают поля банка/работ/назначений. Quarto 1.11.5 / CUE 0.17.1;
 широкую Windows CI matrix не добавлять.
 
 ## Изменения, документация и проверки
@@ -57,7 +58,7 @@ main + служебная gh-pages, если используется, + heads O
 ## Подготовка документации пункта 8 — 8 октября 2026
 
 Документационный исполнитель работает по принятым Core решениям; модель не
-менялась. Добавлена [подготовка авторства](../authoring-next.md) `accepted-next`,
+менялась. Добавлена [сохранённая подготовка авторства](https://github.com/Afonenko-Course-Tools/quarto-course-print/blob/a03a8d827815543168727c8b3b8f9790932fc241/docs/authoring-next.md) `accepted-next`,
 ссылки из README и индекса. Существующие current API/контракты не объявлены
 мигрированными до проверки runtime. Примеры на этой ветке предназначены для
 следующей модели; native ordinary Quarto сохранён вне bank opt-in.
@@ -86,3 +87,39 @@ assertions отсутствия самой страницы работы тре�
 проекции. Добавленный открытый разбор не входит в выбранную delivery/PDF/XML.
 
 Ruling: process/diagnostics/CLI/cleanup уже существуют в свежем main; старое указание создать их заменено сверкой фактической границы.
+
+
+## Текущие контракты и release-pinned примеры — 8 октября 2026
+
+Документальный commit: `2090360aa1ffa0331d8c483e7fd9a7a9e48288bf`.
+Принята версия `v0.3.0`; descriptor подготовлен отдельным runtime
+исполнителем. На момент этой записи новые Releases ещё не опубликованы;
+merge/main, финальный CI, готовая release-сборка и публикация выполняются root
+по линейному плану. Эта запись не подтверждает общий финальный integration gate.
+
+- Правила подготовки перенесены в действующие README/spec/тематические docs.
+  `current` описывает код того же ref; документация выпуска читается из того же
+  immutable tag. В README/examples нет временных заявлений о доступности Release.
+- `docs/authoring-next.md` удалён только после проверки точного Git blob
+  `26b6c8bd9e62f645793e7c2f1751d3528f7457d4` на commit
+  `a03a8d827815543168727c8b3b8f9790932fc241`; восстановление записано в карте истории.
+- Install/source/BUILD pins задают Core `v4.0.0`, Publisher `v5.0.0`, QRC `v3.0.0`
+  и свою новую версию там, где эти зависимости используются. Native source-ссылки
+  ведут на tool tag производителя; планируемый demo tag — `demo-20261008`,
+  из того же clean producer SHA с `BUILD.sourceDirty: false`. Download не получает
+  собственного demo Release. Механизм provenance/build runtime не менялся.
+- Свежая статическая проверка: 7 YAML/front matter без повторных
+  ключей, 26 существующих локальных Markdown-ссылок, 2 native
+  source-конфигураций. У всех public base `_quarto.yml` — `lang: ru` и
+  `fail-if-warnings: true`. Активные авторские документы не содержат Quarto 1.10,
+  старой requirements карты/kinds, solution for и переходных contract ссылок.
+- examples/paper/bank: 5 задач, 2 работ, 4 назначений
+  Это проверка авторской разметки и ссылок, не native AST/render.
+- `git diff --check` и staged whitespace — PASS. `deno fmt --check`
+  существующих build/build-info scripts — PASS там, где они есть. Публичные
+  API, runtime/tests/.github/CI этим документальным исполнителем не изменены.
+
+Команды проверки и полные результаты: `/tmp/consumer-docs-final-20261008/verify.py`,
+`bank-check.py`, `verify.log`, `bank-check.log`, `checks.json`, `bank-checks.json`.
+Широкие native suites и release demo builds здесь не запускались параллельно:
+их свежие результаты записывает отдельный integration исполнитель и root.
