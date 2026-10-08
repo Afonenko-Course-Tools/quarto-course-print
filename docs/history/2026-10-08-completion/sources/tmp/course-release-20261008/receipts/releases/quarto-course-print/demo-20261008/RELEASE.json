@@ -1,0 +1,384 @@
+{
+  "producer": "Afonenko-Course-Tools/quarto-course-print",
+  "tag": "demo-20261008",
+  "commit": "00c51f7342da376e85027a925dd9f1207783f924",
+  "kind": "ready-demos",
+  "demos": {
+    "print": "/tmp/course-release-20261008/receipts/builds/print/_site"
+  },
+  "plannedVersion": "0.3.0",
+  "provenance": {
+    "print": {
+      "nativeBuild": {
+        "files": {
+          "BUILD.json": "62ef1ad286f07de04643cca290fdbd7961861acaa2c45d9ad7bc9b72d5134270",
+          "artifacts/ordinary.pdf": "8ca36d701956677c917208605359d8527f7756077abe316c020e9a9a6d6afcff",
+          "artifacts/variant-a/data.txt": "898ae1dec5129ffe3cd1db0d665ca448df4a4a24939fbd0ae07dfee284fa1532",
+          "artifacts/variant-a/dot.png": "b6a99386130538b6676338acf4da682f17853fb992b7e1ffd3445b7ae59e3d8c",
+          "artifacts/variant-a/handout.pdf": "64e6dd7582dad2389ea1f1ae3bec229c0141205096cb63ce1963515abd0118a7",
+          "artifacts/variant-a/public.json": "32cdd06ffa528951ea9c81d1fe34466923e97077feae62e1a0ade6ac15e4fb3e",
+          "artifacts/variant-b/handout.pdf": "4edc3ddf2feef5aac458fc28756b058bffdfd5108fd4ecd00938d73b69977c92",
+          "artifacts/variant-b/public.json": "fa5f7ccf48083b5575484c95b56740312b8fb5ae35d0ccf16c2dc09f93c494d9",
+          "index.html": "f9c6fe43968700c15315932f2a0a032e040dc3da1a3c6ad8d636a875c535994e",
+          "search.json": "7596ab320a802e5be6838fb959692091f209c1734e805e189d81bd2a93f5d7ef",
+          "site_libs/bootstrap/bootstrap-6b26a0d8bb87c81ef456cd750ee2bff7.min.css": "beda21ab15d183714a4ffc01d44ecb4086f3f7110256070e7c91888c9c00a412",
+          "site_libs/bootstrap/bootstrap-icons.css": "01253947f506e030589e4f33fc7ec7ccdfb9505e2e596dedf16445f12e243c0a",
+          "site_libs/bootstrap/bootstrap-icons.woff": "f55513b7b591cb84a3b87ff0e34ea24d4831d6fedc22e54b911ca64b5b544a15",
+          "site_libs/bootstrap/bootstrap.min.js": "d2ea6c1e0cabca20d18e924b25a1cd0187c38ba7c33f60ab06e1b0402b9bcdb5",
+          "site_libs/clipboard/clipboard.min.js": "e17a1d816e13c0826e0ed7febfabc3277f45571234bde0bf9120829a7169edc9",
+          "site_libs/quarto-html/anchor.min.js": "69098e105d990f834cff1b7886d873444228ff63c590e5ff834d568f1115ed8b",
+          "site_libs/quarto-html/popper.min.js": "4d50586b184724d39ddfe0f6582861664eddd5e806e5a79e0dbaa832361414d0",
+          "site_libs/quarto-html/quarto-syntax-highlighting-3b9ea68436acb9022c2fbce6dbb58b06.css": "de337e8e4733e0e74787e8ce5d9b718300c4d8051bacdeb5fb6320b218cdddbf",
+          "site_libs/quarto-html/quarto.js": "4ecb60f215d96b2af0fe9d985c71e32863b1c993a64725a416ac18b5991c59c6",
+          "site_libs/quarto-html/tabsets/tabsets.js": "a9c226bf70e82eaf5476f619cecfb70b4446b87ce4d1634d6404b0b2ba006d15",
+          "site_libs/quarto-html/tippy.css": "5969f497d9158d7682f8219c6f13fa67269cdf5bf50a3931d95327151dee5678",
+          "site_libs/quarto-html/tippy.umd.min.js": "41181eeec6d7ba64cb9165f0e95563e34e026bde79e7c13aeec83270429b6fae",
+          "site_libs/quarto-nav/quarto-nav.js": "a209dafb198d7c8e77cb398912b7225806e7b998211afa1fb269a4ef54ff56f6",
+          "site_libs/quarto-search/autocomplete.umd.js": "cd9db3b7d812139a4679a2566ea8f01b2a80159490a60b9e9e813e81b5e00a05",
+          "site_libs/quarto-search/fuse.min.js": "c57339c3fa16b1d69d9a6b46749a8139ef8d4fc9bbfe48144ff897aa7d4222ec",
+          "site_libs/quarto-search/quarto-search.js": "1a23221f499b3993dc66ca5c8913e4e6602dfa4652337e9fbf75139ded5ece68"
+        },
+        "operation": {
+          "group": "print",
+          "producer": "Afonenko-Course-Tools/quarto-course-print",
+          "commit": "00c51f7342da376e85027a925dd9f1207783f924",
+          "folder": "examples/paper",
+          "output": "_site",
+          "kind": "script",
+          "installs": [
+            [
+              "bank",
+              "quarto-course"
+            ],
+            [
+              ".",
+              "quarto-course-print"
+            ]
+          ],
+          "releases": {
+            "quarto-course-print": {
+              "tag": "v0.3.0",
+              "commit": "00c51f7342da376e85027a925dd9f1207783f924"
+            },
+            "quarto-course": {
+              "tag": "v4.0.0",
+              "commit": "d58494171e3020957b64ed229cbc8537751e3beb"
+            }
+          },
+          "expectedBuildDependencies": {
+            "quarto-course": "4.0.0"
+          },
+          "expectedExtensionVersion": "0.3.0",
+          "quarto": "1.11.5"
+        },
+        "publishedDependencies": {
+          "quarto-course-print": {
+            "url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course-print/releases/406377923",
+            "assets_url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course-print/releases/406377923/assets",
+            "upload_url": "https://uploads.github.com/repos/Afonenko-Course-Tools/quarto-course-print/releases/406377923/assets{?name,label}",
+            "html_url": "https://github.com/Afonenko-Course-Tools/quarto-course-print/releases/tag/v0.3.0",
+            "id": 406377923,
+            "author": {
+              "login": "AfonenkoA",
+              "id": 72708332,
+              "node_id": "MDQ6VXNlcjcyNzA4MzMy",
+              "avatar_url": "https://avatars.githubusercontent.com/u/72708332?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/AfonenkoA",
+              "html_url": "https://github.com/AfonenkoA",
+              "followers_url": "https://api.github.com/users/AfonenkoA/followers",
+              "following_url": "https://api.github.com/users/AfonenkoA/following{/other_user}",
+              "gists_url": "https://api.github.com/users/AfonenkoA/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/AfonenkoA/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/AfonenkoA/subscriptions",
+              "organizations_url": "https://api.github.com/users/AfonenkoA/orgs",
+              "repos_url": "https://api.github.com/users/AfonenkoA/repos",
+              "events_url": "https://api.github.com/users/AfonenkoA/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/AfonenkoA/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "node_id": "RE_kwDOU3PmYc4YONXD",
+            "tag_name": "v0.3.0",
+            "target_commitish": "00c51f7342da376e85027a925dd9f1207783f924",
+            "name": "quarto-course-print v0.3.0",
+            "draft": false,
+            "immutable": true,
+            "prerelease": false,
+            "created_at": "2026-10-08T03:21:47Z",
+            "updated_at": "2026-10-08T03:25:05Z",
+            "published_at": "2026-10-08T03:25:05Z",
+            "assets": [
+              {
+                "url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course-print/releases/assets/620591034",
+                "id": 620591034,
+                "node_id": "RA_kwDOU3PmYc4k_Xe6",
+                "name": "quarto-course-print-v0.3.0.tar.gz",
+                "label": "",
+                "uploader": {
+                  "login": "AfonenkoA",
+                  "id": 72708332,
+                  "node_id": "MDQ6VXNlcjcyNzA4MzMy",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/72708332?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/AfonenkoA",
+                  "html_url": "https://github.com/AfonenkoA",
+                  "followers_url": "https://api.github.com/users/AfonenkoA/followers",
+                  "following_url": "https://api.github.com/users/AfonenkoA/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/AfonenkoA/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/AfonenkoA/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/AfonenkoA/subscriptions",
+                  "organizations_url": "https://api.github.com/users/AfonenkoA/orgs",
+                  "repos_url": "https://api.github.com/users/AfonenkoA/repos",
+                  "events_url": "https://api.github.com/users/AfonenkoA/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/AfonenkoA/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                },
+                "content_type": "application/x-gtar",
+                "state": "uploaded",
+                "size": 2658397,
+                "digest": "sha256:258a3632b1738c9d10d54bf7f81bc9dad651cf00688b74638887db29644ec9cd",
+                "download_count": 1,
+                "created_at": "2026-10-08T03:23:54Z",
+                "updated_at": "2026-10-08T03:24:49Z",
+                "browser_download_url": "https://github.com/Afonenko-Course-Tools/quarto-course-print/releases/download/v0.3.0/quarto-course-print-v0.3.0.tar.gz"
+              },
+              {
+                "url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course-print/releases/assets/620591039",
+                "id": 620591039,
+                "node_id": "RA_kwDOU3PmYc4k_Xe_",
+                "name": "RELEASE.json",
+                "label": "",
+                "uploader": {
+                  "login": "AfonenkoA",
+                  "id": 72708332,
+                  "node_id": "MDQ6VXNlcjcyNzA4MzMy",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/72708332?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/AfonenkoA",
+                  "html_url": "https://github.com/AfonenkoA",
+                  "followers_url": "https://api.github.com/users/AfonenkoA/followers",
+                  "following_url": "https://api.github.com/users/AfonenkoA/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/AfonenkoA/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/AfonenkoA/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/AfonenkoA/subscriptions",
+                  "organizations_url": "https://api.github.com/users/AfonenkoA/orgs",
+                  "repos_url": "https://api.github.com/users/AfonenkoA/repos",
+                  "events_url": "https://api.github.com/users/AfonenkoA/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/AfonenkoA/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                },
+                "content_type": "application/json",
+                "state": "uploaded",
+                "size": 399,
+                "digest": "sha256:e1621178efa1d5400c1b4e28493c1428f5634c8201f3c143cabb02d00d4b6563",
+                "download_count": 1,
+                "created_at": "2026-10-08T03:23:54Z",
+                "updated_at": "2026-10-08T03:23:56Z",
+                "browser_download_url": "https://github.com/Afonenko-Course-Tools/quarto-course-print/releases/download/v0.3.0/RELEASE.json"
+              }
+            ],
+            "tarball_url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course-print/tarball/v0.3.0",
+            "zipball_url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course-print/zipball/v0.3.0",
+            "body": "Verified merged revision `00c51f7342da376e85027a925dd9f1207783f924`.\n\nCompact extension bundle verified by native quarto add. Ready demos are published separately in demo-20261008.\n\nRELEASE.json records SHA-256, size and provenance. Every draft asset is downloaded and hash-verified before immutable publication.\n"
+          },
+          "quarto-course": {
+            "url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course/releases/406364109",
+            "assets_url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course/releases/406364109/assets",
+            "upload_url": "https://uploads.github.com/repos/Afonenko-Course-Tools/quarto-course/releases/406364109/assets{?name,label}",
+            "html_url": "https://github.com/Afonenko-Course-Tools/quarto-course/releases/tag/v4.0.0",
+            "id": 406364109,
+            "author": {
+              "login": "AfonenkoA",
+              "id": 72708332,
+              "node_id": "MDQ6VXNlcjcyNzA4MzMy",
+              "avatar_url": "https://avatars.githubusercontent.com/u/72708332?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/AfonenkoA",
+              "html_url": "https://github.com/AfonenkoA",
+              "followers_url": "https://api.github.com/users/AfonenkoA/followers",
+              "following_url": "https://api.github.com/users/AfonenkoA/following{/other_user}",
+              "gists_url": "https://api.github.com/users/AfonenkoA/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/AfonenkoA/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/AfonenkoA/subscriptions",
+              "organizations_url": "https://api.github.com/users/AfonenkoA/orgs",
+              "repos_url": "https://api.github.com/users/AfonenkoA/repos",
+              "events_url": "https://api.github.com/users/AfonenkoA/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/AfonenkoA/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "node_id": "RE_kwDOUovL0M4YOJ_N",
+            "tag_name": "v4.0.0",
+            "target_commitish": "d58494171e3020957b64ed229cbc8537751e3beb",
+            "name": "quarto-course v4.0.0",
+            "draft": false,
+            "immutable": true,
+            "prerelease": false,
+            "created_at": "2026-10-08T02:45:07Z",
+            "updated_at": "2026-10-08T03:08:10Z",
+            "published_at": "2026-10-08T03:08:10Z",
+            "assets": [
+              {
+                "url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course/releases/assets/620547170",
+                "id": 620547170,
+                "node_id": "RA_kwDOUovL0M4k_Mxi",
+                "name": "quarto-course-v4.0.0.tar.gz",
+                "label": "",
+                "uploader": {
+                  "login": "AfonenkoA",
+                  "id": 72708332,
+                  "node_id": "MDQ6VXNlcjcyNzA4MzMy",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/72708332?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/AfonenkoA",
+                  "html_url": "https://github.com/AfonenkoA",
+                  "followers_url": "https://api.github.com/users/AfonenkoA/followers",
+                  "following_url": "https://api.github.com/users/AfonenkoA/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/AfonenkoA/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/AfonenkoA/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/AfonenkoA/subscriptions",
+                  "organizations_url": "https://api.github.com/users/AfonenkoA/orgs",
+                  "repos_url": "https://api.github.com/users/AfonenkoA/repos",
+                  "events_url": "https://api.github.com/users/AfonenkoA/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/AfonenkoA/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                },
+                "content_type": "application/x-gtar",
+                "state": "uploaded",
+                "size": 114119,
+                "digest": "sha256:40fb5b3e0bee71a9d652c347e7c8d1f89c193473d9029eb374e0b03edbc63bec",
+                "download_count": 3,
+                "created_at": "2026-10-08T03:00:29Z",
+                "updated_at": "2026-10-08T03:00:31Z",
+                "browser_download_url": "https://github.com/Afonenko-Course-Tools/quarto-course/releases/download/v4.0.0/quarto-course-v4.0.0.tar.gz"
+              },
+              {
+                "url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course/releases/assets/620547168",
+                "id": 620547168,
+                "node_id": "RA_kwDOUovL0M4k_Mxg",
+                "name": "RELEASE.json",
+                "label": "",
+                "uploader": {
+                  "login": "AfonenkoA",
+                  "id": 72708332,
+                  "node_id": "MDQ6VXNlcjcyNzA4MzMy",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/72708332?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/AfonenkoA",
+                  "html_url": "https://github.com/AfonenkoA",
+                  "followers_url": "https://api.github.com/users/AfonenkoA/followers",
+                  "following_url": "https://api.github.com/users/AfonenkoA/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/AfonenkoA/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/AfonenkoA/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/AfonenkoA/subscriptions",
+                  "organizations_url": "https://api.github.com/users/AfonenkoA/orgs",
+                  "repos_url": "https://api.github.com/users/AfonenkoA/repos",
+                  "events_url": "https://api.github.com/users/AfonenkoA/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/AfonenkoA/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                },
+                "content_type": "application/json",
+                "state": "uploaded",
+                "size": 386,
+                "digest": "sha256:670601d2fc1b42c956207830441ead459a32f23de8c5a4e9113cd190e7067823",
+                "download_count": 3,
+                "created_at": "2026-10-08T03:00:29Z",
+                "updated_at": "2026-10-08T03:00:30Z",
+                "browser_download_url": "https://github.com/Afonenko-Course-Tools/quarto-course/releases/download/v4.0.0/RELEASE.json"
+              }
+            ],
+            "tarball_url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course/tarball/v4.0.0",
+            "zipball_url": "https://api.github.com/repos/Afonenko-Course-Tools/quarto-course/zipball/v4.0.0",
+            "body": "Verified merged revision `d58494171e3020957b64ed229cbc8537751e3beb`.\n\nCompact extension bundle verified by native quarto add. Ready demos are published separately in demo-20261008.\n\nRELEASE.json records SHA-256, size and provenance. Every draft asset is downloaded and hash-verified before immutable publication.\n"
+          }
+        },
+        "installedDescriptors": {
+          "bank/_extensions/Afonenko-Course-Tools/course-core/_extension.yml": {
+            "sha256": "f7d691101c6303458716a8fd1b191c1366405aac0331a062c3fe08cabd87b1ee",
+            "version": "4.0.0"
+          },
+          "bank/_extensions/Afonenko-Course-Tools/course-presentation/_extension.yml": {
+            "sha256": "90d321014fa141da75fb65af16d67cf828a476aa391d1e80b4e64ca382aa9901",
+            "version": "4.0.0"
+          },
+          "bank/_extensions/Afonenko-Course-Tools/course-navigation/_extension.yml": {
+            "sha256": "88eabfaf509c272f1aa40e138b77ddb2ce0943067a55b023c088b73e19455e92",
+            "version": "4.0.0"
+          },
+          "_extensions/Afonenko-Course-Tools/course-print/_extension.yml": {
+            "sha256": "4f2f9aea36262a2d50537aa7efa49e9e9199ba1063d50c6881f253f4db967ce7",
+            "version": "0.3.0"
+          }
+        },
+        "build": {
+          "sourceRepository": "Afonenko-Course-Tools/quarto-course-print",
+          "commit": "00c51f7342da376e85027a925dd9f1207783f924",
+          "sourceDirty": false,
+          "extensionVersion": "0.3.0",
+          "dependencies": {
+            "quarto-course": "4.0.0"
+          },
+          "projection": "full",
+          "verification": "local installed native build",
+          "livePlatformVerified": false
+        },
+        "ready": "/tmp/course-release-20261008/receipts/builds/print/_site"
+      },
+      "finalLocalChecks": {
+        "passed": true,
+        "files": {
+          "BUILD.json": "62ef1ad286f07de04643cca290fdbd7961861acaa2c45d9ad7bc9b72d5134270",
+          "artifacts/ordinary.pdf": "8ca36d701956677c917208605359d8527f7756077abe316c020e9a9a6d6afcff",
+          "artifacts/variant-a/data.txt": "898ae1dec5129ffe3cd1db0d665ca448df4a4a24939fbd0ae07dfee284fa1532",
+          "artifacts/variant-a/dot.png": "b6a99386130538b6676338acf4da682f17853fb992b7e1ffd3445b7ae59e3d8c",
+          "artifacts/variant-a/handout.pdf": "64e6dd7582dad2389ea1f1ae3bec229c0141205096cb63ce1963515abd0118a7",
+          "artifacts/variant-a/public.json": "32cdd06ffa528951ea9c81d1fe34466923e97077feae62e1a0ade6ac15e4fb3e",
+          "artifacts/variant-b/handout.pdf": "4edc3ddf2feef5aac458fc28756b058bffdfd5108fd4ecd00938d73b69977c92",
+          "artifacts/variant-b/public.json": "fa5f7ccf48083b5575484c95b56740312b8fb5ae35d0ccf16c2dc09f93c494d9",
+          "index.html": "f9c6fe43968700c15315932f2a0a032e040dc3da1a3c6ad8d636a875c535994e",
+          "search.json": "7596ab320a802e5be6838fb959692091f209c1734e805e189d81bd2a93f5d7ef",
+          "site_libs/bootstrap/bootstrap-6b26a0d8bb87c81ef456cd750ee2bff7.min.css": "beda21ab15d183714a4ffc01d44ecb4086f3f7110256070e7c91888c9c00a412",
+          "site_libs/bootstrap/bootstrap-icons.css": "01253947f506e030589e4f33fc7ec7ccdfb9505e2e596dedf16445f12e243c0a",
+          "site_libs/bootstrap/bootstrap-icons.woff": "f55513b7b591cb84a3b87ff0e34ea24d4831d6fedc22e54b911ca64b5b544a15",
+          "site_libs/bootstrap/bootstrap.min.js": "d2ea6c1e0cabca20d18e924b25a1cd0187c38ba7c33f60ab06e1b0402b9bcdb5",
+          "site_libs/clipboard/clipboard.min.js": "e17a1d816e13c0826e0ed7febfabc3277f45571234bde0bf9120829a7169edc9",
+          "site_libs/quarto-html/anchor.min.js": "69098e105d990f834cff1b7886d873444228ff63c590e5ff834d568f1115ed8b",
+          "site_libs/quarto-html/popper.min.js": "4d50586b184724d39ddfe0f6582861664eddd5e806e5a79e0dbaa832361414d0",
+          "site_libs/quarto-html/quarto-syntax-highlighting-3b9ea68436acb9022c2fbce6dbb58b06.css": "de337e8e4733e0e74787e8ce5d9b718300c4d8051bacdeb5fb6320b218cdddbf",
+          "site_libs/quarto-html/quarto.js": "4ecb60f215d96b2af0fe9d985c71e32863b1c993a64725a416ac18b5991c59c6",
+          "site_libs/quarto-html/tabsets/tabsets.js": "a9c226bf70e82eaf5476f619cecfb70b4446b87ce4d1634d6404b0b2ba006d15",
+          "site_libs/quarto-html/tippy.css": "5969f497d9158d7682f8219c6f13fa67269cdf5bf50a3931d95327151dee5678",
+          "site_libs/quarto-html/tippy.umd.min.js": "41181eeec6d7ba64cb9165f0e95563e34e026bde79e7c13aeec83270429b6fae",
+          "site_libs/quarto-nav/quarto-nav.js": "a209dafb198d7c8e77cb398912b7225806e7b998211afa1fb269a4ef54ff56f6",
+          "site_libs/quarto-search/autocomplete.umd.js": "cd9db3b7d812139a4679a2566ea8f01b2a80159490a60b9e9e813e81b5e00a05",
+          "site_libs/quarto-search/fuse.min.js": "c57339c3fa16b1d69d9a6b46749a8139ef8d4fc9bbfe48144ff897aa7d4222ec",
+          "site_libs/quarto-search/quarto-search.js": "1a23221f499b3993dc66ca5c8913e4e6602dfa4652337e9fbf75139ded5ece68"
+        },
+        "checks": {
+          "html": true,
+          "resources": true,
+          "sourceLinks": true,
+          "outputs": true
+        },
+        "logs": "/tmp/course-release-20261008/receipts/checks/quarto-course-print"
+      }
+    }
+  },
+  "assets": {
+    "paper.tar.gz": {
+      "sha256": "76635e7759ecd22d3da3126c56b6c0a181ae7a1e2322ff407b2af6da6ad4e99c",
+      "bytes": 440649
+    }
+  }
+}
