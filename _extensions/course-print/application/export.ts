@@ -84,7 +84,9 @@ function prepareValidatedPrint(
         c: [2, ["", [], []], [{
           t: "Str",
           c: q.id +
-            (w.requirements?.[q.id] === "optional" ? " (Необязательное)" : ""),
+            (w.assignments[q.key].requirement === "optional"
+              ? " (Необязательное)"
+              : ""),
         }]],
       },
       ...structuredClone(q.condition),

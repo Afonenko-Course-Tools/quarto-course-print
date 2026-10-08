@@ -19,6 +19,8 @@ const sample = () => ({
     key: "course-a/exr-manual",
     source: "tasks/corpus.qmd",
     visibility: "public",
+    statementVisibility: "restricted",
+    hasPublicSolution: false,
     answerType: "manual",
     condition: [para("Production native condition")],
     publicAnswer: [para("Response: ____________________")],
@@ -31,6 +33,12 @@ const sample = () => ({
     kind: "lab",
     title: "Production work one",
     items: ["course-a/exr-manual"],
+    assignments: {
+      "course-a/exr-manual": {
+        requirement: "required",
+        workMode: "individual",
+      },
+    },
   }, {
     owner: "course-a",
     id: "sec-work-two",
@@ -39,6 +47,12 @@ const sample = () => ({
     kind: "test",
     title: "Production work two",
     items: ["course-a/exr-manual"],
+    assignments: {
+      "course-a/exr-manual": {
+        requirement: "required",
+        workMode: "individual",
+      },
+    },
   }],
   resources: [] as any[],
 });
@@ -389,31 +403,93 @@ Deno.test("unknown legacy transport refuses malformed records and native URL slo
   }
 });
 
-Deno.test("task requirements print optional labels and allow ungraded handouts", () => {
-  const p: any = sample();
-  p.works[0].requirements = { "exr-manual": "optional" };
-  const text = JSON.stringify(preparePrint(p, p.works[0].key, {}));
-  assert(
-    text.includes("Необязательное"),
-    "optional work member lost its status",
-  );
-  p.works[0].kind = "handout";
-  delete p.works[0].requirements;
-  preparePrint(p, p.works[0].key, {});
+Deno.test("qualified assignments print optional labels for all current work kinds", () => {
+  for (const kind of ["lab", "seminar", "practical", "test"]) {
+    const p: any = sample();
+    p.works[0].kind = kind;
+    p.works[0].assignments["course-a/exr-manual"].requirement = "optional";
+    assert(
+      JSON.stringify(preparePrint(p, p.works[0].key, {})).includes(
+        "Необязательное",
+      ),
+      "optional assignment lost",
+    );
+  }
 });
-Deno.test("task requirements refuse unknown members and unsupported values", () => {
+Deno.test("assignments require exact qualified member keys and closed enum fields", () => {
   for (
-    const requirements of [
-      { "exr-absent": "optional" },
-      { "exr-manual": "recommended" },
+    const assignments of [
+      undefined,
+      {},
       [],
       null,
+      { "exr-manual": { requirement: "required", workMode: "individual" } },
+      {
+        "course-a/exr-manual": {
+          requirement: "required",
+          workMode: "individual",
+        },
+        "course-a/exr-other": {
+          requirement: "required",
+          workMode: "individual",
+        },
+      },
+      ...[
+        { requirement: "recommended", workMode: "individual" },
+        { requirement: "required", workMode: "team" },
+        { requirement: "required", workMode: "individual", stage: "review" },
+        { requirement: "required", workMode: "individual", extra: true },
+        { requirement: "required" },
+      ].map((a) => ({ "course-a/exr-manual": a })),
     ]
   ) {
     const p: any = sample();
-    p.works[0].requirements = requirements;
+    p.works[0].assignments = assignments;
     rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
   }
+  for (const kind of ["exam", "handout"]) {
+    const p: any = sample();
+    p.works[0].kind = kind;
+    rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  }
+  const p: any = sample();
+  p.works[0].requirements = { "exr-manual": "optional" };
+  rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+});
+Deno.test("website statement policy is independent of participant-safe transport", () => {
+  for (const statementVisibility of ["open", "restricted"]) {
+    const p: any = sample();
+    p.works = p.works.slice(0, 1);
+    p.questions[0].statementVisibility = statementVisibility;
+    preparePrint(p, p.works[0].key, {});
+    for (const kind of ["test", "practical"]) {
+      p.works[0].kind = kind;
+      if (statementVisibility === "open") {
+        rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+      } else preparePrint(p, p.works[0].key, {});
+    }
+  }
+  for (
+    const change of [{ statementVisibility: "private" }, {
+      hasPublicSolution: "true",
+    }, { purpose: "objectives" }]
+  ) {
+    const p: any = sample();
+    Object.assign(p.questions[0], change);
+    rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  }
+});
+Deno.test("demonstration stage validates the participant declaration without copying solutions", () => {
+  const p: any = sample();
+  p.works = p.works.slice(0, 1);
+  p.works[0].assignments["course-a/exr-manual"].stage = "demonstration";
+  rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  Object.assign(p.questions[0], {
+    statementVisibility: "open",
+    purpose: "demonstration",
+    hasPublicSolution: true,
+  });
+  preparePrint(p, p.works[0].key, {});
 });
 Deno.test("explicit stable work ID need not use Quarto section prefix", () => {
   const p: any = sample();
@@ -578,4 +654,113 @@ Deno.test("Print sets native Russian language metadata for generated captions", 
       JSON.stringify({ t: "MetaString", c: "ru" }),
     "native Print language is missing",
   );
+});
+
+Deno.test("rejected assignment never creates output or invokes the compiler", async () => {
+  const root = await Deno.makeTempDir();
+  try {
+    const p: any = sample();
+    p.works[0].assignments = {};
+    try {
+      await renderPrint(p, p.works[0].key, root + "/out", {}, {});
+      throw Error("expected refusal");
+    } catch (error) {
+      assert(String(error).includes("assignments"), String(error));
+    }
+    try {
+      await Deno.stat(root + "/out");
+      throw Error("invalid package created output");
+    } catch (error) {
+      assert(error instanceof Deno.errors.NotFound, String(error));
+    }
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("native producer in-memory optional purpose may be undefined", () => {
+  const p: any = sample();
+  p.questions[0].purpose = undefined;
+  preparePrint(p, p.works[0].key, {});
+});
+
+Deno.test("fractional theory time accepts the native optional work field and prints PDF", async () => {
+  const p: any = sample();
+  p.works[0].theoryTime = 7.5;
+  const root = await Deno.makeTempDir();
+  try {
+    const result = await renderPrint(p, p.works[0].key, root + "/out", {}, {});
+    assert(result.status === "built", "fractional theory package failed PDF");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+  p.works[0].theoryTime = undefined;
+  preparePrint(p, p.works[0].key, {});
+});
+Deno.test("theory time rejects nonpositive nonfinite and nonnumber values", () => {
+  for (const theoryTime of [0, -1, NaN, Infinity, -Infinity, "7.5", null]) {
+    const p: any = sample();
+    p.works[0].theoryTime = theoryTime;
+    rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  }
+});
+
+Deno.test("transport enums reject arrays that stringify to valid values", () => {
+  for (
+    const mutate of [
+      (p: any) => {
+        p.questions[0].statementVisibility = ["restricted"];
+      },
+      (p: any) => {
+        p.questions[0].purpose = ["discussion"];
+      },
+      (p: any) => {
+        p.works[0].assignments["course-a/exr-manual"].requirement = [
+          "required",
+        ];
+      },
+      (p: any) => {
+        p.works[0].assignments["course-a/exr-manual"].workMode = ["individual"];
+      },
+      (p: any) => {
+        p.works[0].assignments["course-a/exr-manual"].stage = ["classroom"];
+      },
+    ]
+  ) {
+    const p: any = sample();
+    p.works = p.works.slice(0, 1);
+    mutate(p);
+    rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  }
+});
+
+Deno.test("direct API treats undefined assignment stage as omitted", () => {
+  const p: any = sample();
+  const before = preparePrint(p, p.works[0].key, {});
+  p.works[0].assignments["course-a/exr-manual"].stage = undefined;
+  assert(
+    JSON.stringify(preparePrint(p, p.works[0].key, {})) ===
+      JSON.stringify(before),
+    "undefined optional stage changed participant document",
+  );
+});
+Deno.test("optional stage still refuses null and unknown enum values", () => {
+  for (const stage of [null, "review", ["classroom"], { stage: "classroom" }]) {
+    const p: any = sample();
+    p.works[0].assignments["course-a/exr-manual"].stage = stage;
+    rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  }
+});
+Deno.test("invalid theory time identifies its actual transport field", () => {
+  const p: any = sample();
+  p.works[0].theoryTime = 0;
+  try {
+    preparePrint(p, p.works[0].key, {});
+    throw Error("expected refusal");
+  } catch (error) {
+    assert(
+      error instanceof Error && error.message.includes("theoryTime"),
+      String(error),
+    );
+  }
 });

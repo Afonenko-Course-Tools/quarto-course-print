@@ -1,11 +1,12 @@
 ---
 assessment:
   kind: lab
+  theory-time: 7.5
 ---
 
 # Practice & review {#sec-work-one}
 
-::: {.task-items}
+::: {.task-items stage="classroom"}
 1. @exr-manual
-2. @exr-choice
+2. [@exr-choice]{requirement="optional" work-mode="pair"}
 :::

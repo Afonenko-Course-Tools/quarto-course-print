@@ -1,3 +1,6 @@
+exercise-bank: true
+exercise-statement-visibility: open
+fail-if-warnings: true
 lang: ru
 project:
   type: book
@@ -5,9 +8,15 @@ project:
   post-render: _extensions/Afonenko-Course-Tools/course-core/entrypoints/post.ts
   resources: ["!_generated/**"]
 book:
+  repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-print
+  repo-branch: v0.3.0
+  repo-subdir: examples/paper/bank
+  repo-actions: [source]
   title: Общий банк заданий
-  chapters: [index.qmd, corpus.qmd]
-format: html
+  chapters: [index.qmd, corpus.qmd, control.qmd, variant-a.qmd, variant-b.qmd]
+format:
+  html:
+    code-tools: false
 filters: [course-core]
 bibliography: ../references.bib
 profile:

@@ -1,9 +1,21 @@
+---
+type: documentation
+component: course-print
+status: current
+updated: 2026-10-08
+---
+
 # Quarto Course Print
+
+[Индекс спецификаций](spec/index.md) описывает контракт текущего Git ref.
+Версия определяется descriptor этого ref; код и документация устанавливаемого
+выпуска читаются из одного тега. Изменения main после выпущенного тега —
+**unreleased**. Минимум — Quarto 1.11.5 и CUE 0.17.1.
 
 Print создаёт публичный PDF из текущей native проекции Core `course-body-package-v1`. Вызывающий код использует Core `collectExport(courseRoot, {book, work, profiles})`, затем `buildBodies(result, {projectRoot, courseId, work, includeClosed:true})` и передаёт Print результат `publicPackage`. Идентификатор курса объявляется один раз в корне. Полный захват исходников включает контрольные QMD, исключённые из студенческого HTML, и не требует полной HTML-сборки.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-print@v0.2.1 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-print@v0.3.0 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-print/entrypoints/export.ts \
   public-package.json course-a/sec-work-one output header.json
@@ -19,14 +31,25 @@ deno run --allow-read --allow-write --allow-run=quarto --allow-env \
 CORE=../quarto-course bash tools/check.sh
 ```
 
-Полная проверка устанавливает настоящие пакеты Core и Print через `quarto add`, собирает авторские full/student-примеры, формирует native Body, проверяет закрытые данные и целостность ресурсов, компилирует PDF и запускает установленный CLI через `quarto run tests/installed-cli.ts REPO PACKAGE`. Проверяйте Quarto 1.10.18 и 1.11.5 с CUE 0.17.1; для проверки PDF нужен Poppler. Runtime не требует npm или сетевых зависимостей. См. [публичный транспорт](docs/public-body.md).
+Полная проверка устанавливает настоящие пакеты Core и Print через `quarto add`, собирает авторские full/student-примеры, формирует native Body, проверяет закрытые данные и целостность ресурсов, компилирует PDF и запускает установленный CLI через `quarto run tests/installed-cli.ts REPO PACKAGE`. Проверяйте Quarto 1.11.5 с CUE 0.17.1; для проверки PDF нужен Poppler. Runtime не требует npm или сетевых зависимостей. См. [публичный транспорт](docs/public-body.md).
 
 ## Установка выпуска
 
-Выпуск `v0.2.1` соответствует версии в `_extension.yml`. Установите указанный тег и сохраните установленные файлы `_extensions` в репозитории курса. Для обновления установите следующий опубликованный тег через `quarto add`, проверьте изменения и выполните проверки курса. Опубликованные теги неизменяемы; исправления получают новую версию и тег.
+Версия определяется descriptor того же Git ref. Код, descriptor и документация
+установленного выпуска читаются из того же точного тега, что указан в команде.
+Сохраните `_extensions` в Git курса; для обновления проверьте diff и выполните
+проверки курса. Опубликованные теги неизменяемы; исправления получают новый тег.
 
 ## Общие назначения заданий
 
-Работа использует один авторский список `.task-items`. Транспорт сохраняет канонические ключи `items` и необязательную карту `requirements` с локальными ID `exr-*` и значениями `required` или `optional`. Для lab/test/exam задания по умолчанию обязательны; handout задаёт подборку без оценивания. Дополнительные задания не заменяют обязательные. Print помечает необязательные вопросы и не применяет формулу оценки.
+Работа `lab|seminar|practical|test` объединяет один или несколько списков
+`.task-items`. Body сохраняет упорядоченные qualified `items` и обязательную
+карту `assignments` с теми же ключами: `{stage?, requirement, workMode}`.
+Print помечает optional вопросы и не применяет формулу оценки. В test/practical
+все назначенные условия restricted. Stage demonstration требует открытой
+канонической demonstration с фактическим публичным решением. Сайт и participant
+выдача имеют разные границы: restricted условие разрешено в PDF, закрытые ключи,
+решения и gradingNotes остаются запрещены. Полные правила —
+[публичный транспорт](docs/public-body.md).
 
 [Самодостаточная демонстрация](examples/paper/README.md) содержит обычный native PDF и два варианта на основе банка.

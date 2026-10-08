@@ -28,10 +28,41 @@ Deno.test("public native document embeds header and fields, excludes all teacher
       "closedKey",
       "correct",
       "demo-sol",
+      "Native Print bank",
+      "sec-questions",
     ]
   ) assert(!text.includes(s), s);
-  for (const s of ["ФИО", "Группа", "Дата", "TLS", "{{literal}}"]) {
+  for (
+    const s of [
+      "ФИО",
+      "Группа",
+      "Дата",
+      "TLS",
+      "{{literal}}",
+      "Необязательное",
+    ]
+  ) {
     assert(text.includes(s), s);
+  }
+  const headers: string[] = [];
+  const collectHeaders = (node: any): void => {
+    if (Array.isArray(node)) {
+      node.forEach(collectHeaders);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    if (node.t === "Header") {
+      headers.push(
+        node.c[2].filter((inline: any) => inline.t === "Str").map((
+          inline: any,
+        ) => inline.c).join(" "),
+      );
+    }
+    Object.values(node).forEach(collectHeaders);
+  };
+  collectHeaders(doc.blocks);
+  for (const heading of ["Calculation details"]) {
+    assert(headers.includes(heading), heading);
   }
 });
 Deno.test("unsupported repeated equation and closed items reject before render", () => {

@@ -9,6 +9,8 @@ export const sample = () => ({
     key: "course-a/exr-manual",
     source: "index.qmd",
     visibility: "public",
+    statementVisibility: "restricted",
+    hasPublicSolution: false,
     answerType: "manual",
     condition: [{ t: "Para", c: [{ t: "Str", c: "Public native condition" }] }],
     publicAnswer: [],
@@ -21,6 +23,12 @@ export const sample = () => ({
     kind: "lab",
     title: "Native work",
     items: ["course-a/exr-manual"],
+    assignments: {
+      "course-a/exr-manual": {
+        requirement: "required",
+        workMode: "individual",
+      },
+    },
   }],
   resources: [],
 });

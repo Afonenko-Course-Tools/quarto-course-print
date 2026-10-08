@@ -1,11 +1,15 @@
 project:
-  type: website
+  type: book
   output-dir: _site
-  render: [corpus.qmd, work-one.qmd, work-two.qmd]
   pre-render: _extensions/course-core/entrypoints/pre.ts
   post-render: _extensions/course-core/entrypoints/post.ts
 format: html
 course:
   id: course-a
 filters: [course-core]
-crossref: false
+
+fail-if-warnings: true
+
+book:
+  title: Native Print bank
+  chapters: [index.qmd, corpus.qmd, work-one.qmd, work-two.qmd]

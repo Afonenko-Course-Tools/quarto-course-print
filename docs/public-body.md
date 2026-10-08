@@ -1,13 +1,75 @@
+---
+type: specification
+component: course-print
+status: current
+updated: 2026-10-08
+---
+
 # Публичный native транспорт Body
 
-Пакет `schema: course-body-package-v1` содержит ровно `owner`, `release`, `apiVersion`, `questions`, `works` и `resources`. `owner` задаёт пространство имён Course, `release` — авторскую метку.
+[Core](../../quarto-course/docs/body-export.md) определяет producer Body и отбор
+исходников. Print принимает `buildBodies(...).publicPackage` для выбранной работы;
+API `preparePrint`/`renderPrint` используют native Pandoc/Typst без повторного
+выполнения авторских движков и project hooks. Код и этот контракт относятся к одному Git ref; версия определяется его
+descriptor. Документация установленного выпуска читается из того же тега.
 
-Вопрос содержит канонический ключ `owner/id`, текущий `source`, публичную видимость, тип ответа и native блоки Pandoc `condition`/`publicAnswer`. Закрытые поля запрещены, включая вопросы вне выбранной работы. Работа связывает уникальные канонические вопросы и содержит `source`, `kind`, `title` и явный устойчивый ID (`^[a-z][a-z0-9-]*$`).
+Пакет `schema: course-body-package-v1` содержит `owner`, `release`, `apiVersion`,
+`questions`, `works`, `resources`. Вопрос имеет канонический `key: owner/id`,
+`source`, `visibility: public`, тип ответа и native Pandoc блоки
+`condition`/`publicAnswer`. Обязательны `statementVisibility: open|restricted`
+и boolean `hasPublicSolution`; необязательный `purpose` принимает
+`demonstration|discussion|independent-study|control`.
 
-Ресурс содержит `owner`, `source`, `effectiveBase`, `target`, SHA-256, байты Base64 и публичную видимость. Производитель разрешает фактический исходник относительно его базы и переписывает native URL на точный путь относительно проекта. `effectiveBase` может быть абсолютным контекстом производителя; Print не открывает его. `target` — безопасный относительный путь без псевдонимов, скрытых или служебных каталогов и файлов исходников. Ресурсы выбирают только адреса Image/Link; упоминание имени в тексте ничего не выбирает.
+`statementVisibility` описывает публикацию условия на сайте, а `visibility: public`
+— безопасную выдачу участнику. Выбранное restricted условие допустимо в PDF.
+`hasPublicSolution` передаёт факт открытого решения для проверки назначения;
+само решение не входит в Print. Поля `closedKey`, `solution`, `gradingNotes`,
+закрытые маркеры и приватные ресурсы запрещены для всех вопросов пакета.
 
-Core проверяет авторские и сгенерированные объявления до студенческой проекции. Вызывающий код проверяет успешное native завершение и передаёт `buildBodies(...).publicPackage`. Print проверяет отсутствие закрытых полей и целостность байтов, затем компилирует Pandoc/Typst. Старый JSON-пакет не позволяет восстановить свежий результат производителя.
+Работа содержит `owner`, `id`, `key`, `source`, `kind`, `title`, `items`,
+`assignments`; kind — `lab|seminar|practical|test`. `items` сохраняет порядок
+уникальных qualified ключей вопросов. Обязательная карта `assignments` имеет
+ровно эти ключи. Значение содержит `requirement: required|optional`,
+`workMode: individual|pair|group` и необязательный
+`stage: demonstration|classroom|homework`.
 
-Работа с `kind: handout` является подборкой без оценивания. Необязательная карта `requirements` сопоставляет локальные ID `exr-*` со значениями `required`/`optional`. Неизвестные участники и значения отклоняются до PDF. Core выбирает работу до проверки её Body и ресурсов. Полный захват исходников не зависит от включения страниц в студенческий HTML.
+```json
+{
+  "items": ["course-a/exr-one", "course-a/exr-two"],
+  "assignments": {
+    "course-a/exr-one": {"requirement": "required", "workMode": "individual"},
+    "course-a/exr-two": {"stage": "classroom", "requirement": "optional", "workMode": "pair"}
+  }
+}
+```
 
-[Диагностика Print](diagnostics.md) поясняет собственные отказы транспорта, контекст полей и сохранение внешних причин. Источник и ID обозначают входной объект; позиции временного JSON не выдаются за строки QMD.
+Назначение demonstration требует `statementVisibility: open`,
+`purpose: demonstration` и `hasPublicSolution: true`. В `test` и `practical`
+допускаются только restricted вопросы. Необязательный `theoryTime` — положительное
+конечное число минут, включая дробное; Print принимает его без расчёта времени.
+Optional вопрос помечается в выдаче и не заменяет обязательный; формулу оценки
+задаёт платформа. Body-карта использует qualified ключи, а не локальные ID.
+
+PDF включает выбранные назначенные условия, поля ответа и ресурсы их native
+Image/Link. Внутренние заголовки условия сохраняются, якоря исходных страниц
+удаляются. `.assessment-preview`, внешние заголовки занятия, окружающая проза
+и неназначенные задачи исключены producer Core. Поддерживаются manual, numeric,
+single-choice, multipart, matching. Сложные якоря, QRC-ссылки, цитирования,
+raw-разметка и неподдерживаемые узлы отклоняются.
+
+Ресурс содержит `owner`, `source`, `effectiveBase`, `target`, SHA-256, bytes Base64
+и публичную видимость. `effectiveBase` может быть абсолютным контекстом producer;
+Print не открывает его. Безопасный относительный target, отсутствие aliases,
+source/service paths и symlink, целостность bytes/hash проверяются до
+материализации и компиляции. Упоминание имени файла в тексте ресурс не выбирает.
+
+Core проверяет исходные декларации до student-проекции. Вызывающий код проверяет
+завершение текущей native команды и передаёт текущий `publicPackage`; сохранённый
+JSON не подтверждает новую сборку. Для каждой работы нужен отдельный каталог
+результата. Неудачная компиляция не подтверждает успешную выдачу; caller проверяет
+exit code. Runtime не вводит receipts, promotion/rollback или входные boolean
+доказательства успешной сборки.
+
+[README](../README.md) содержит установку и CLI, [диагностика](diagnostics.md) —
+собственные отказы и внешние причины. Source и ID обозначают реальный вход;
+позиции временного JSON не выдаются за строки QMD.
