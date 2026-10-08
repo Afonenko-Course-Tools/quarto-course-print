@@ -733,3 +733,34 @@ Deno.test("transport enums reject arrays that stringify to valid values", () => 
     rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
   }
 });
+
+Deno.test("direct API treats undefined assignment stage as omitted", () => {
+  const p: any = sample();
+  const before = preparePrint(p, p.works[0].key, {});
+  p.works[0].assignments["course-a/exr-manual"].stage = undefined;
+  assert(
+    JSON.stringify(preparePrint(p, p.works[0].key, {})) ===
+      JSON.stringify(before),
+    "undefined optional stage changed participant document",
+  );
+});
+Deno.test("optional stage still refuses null and unknown enum values", () => {
+  for (const stage of [null, "review", ["classroom"], { stage: "classroom" }]) {
+    const p: any = sample();
+    p.works[0].assignments["course-a/exr-manual"].stage = stage;
+    rejects(() => preparePrint(p, p.works[0].key, {}), "ADAPTER");
+  }
+});
+Deno.test("invalid theory time identifies its actual transport field", () => {
+  const p: any = sample();
+  p.works[0].theoryTime = 0;
+  try {
+    preparePrint(p, p.works[0].key, {});
+    throw Error("expected refusal");
+  } catch (error) {
+    assert(
+      error instanceof Error && error.message.includes("theoryTime"),
+      String(error),
+    );
+  }
+});

@@ -243,7 +243,7 @@ function validateProduction(
     ) {
       fail(
         "Некорректные поля фиксированной работы.",
-        context(w, "owner/id/key/source/kind/title/items"),
+        context(w, "owner/id/key/source/kind/title/items/theoryTime"),
       );
     }
     if (
@@ -262,7 +262,7 @@ function validateProduction(
         !["individual", "pair", "group"].includes(
           assignment.workMode as string,
         ) ||
-        (Object.hasOwn(assignment, "stage") &&
+        (assignment.stage !== undefined &&
           !["demonstration", "classroom", "homework"].includes(
             assignment.stage as string,
           ))
