@@ -1,21 +1,16 @@
 import { loadNativeRun } from "./_extensions/course-core/infrastructure/native-run.ts";
-import { assembleRelease } from "./_extensions/course-core/domain/release.ts";
+import { collectExport } from "./_extensions/course-core/body-export/collect.ts";
 import { buildBodies } from "./_extensions/course-core/body-export/producer.ts";
 const run = await loadNativeRun(Deno.cwd());
-const result = assembleRelease(
-  run.documents.map((d) => d.source),
-  run.documents,
-  run.adapters,
-  {
-    view: run.profiles.includes("full") ? "full" : "student",
-    profiles: run.profiles,
-  },
-);
-const bodies = await buildBodies(result, {
-  projectRoot: Deno.cwd(),
+const selected = await collectExport(Deno.cwd(), {
+  book: ".",
   work: "sec-work-one",
+});
+const bodies = await buildBodies(selected.result, {
+  projectRoot: selected.projectRoot,
+  courseId: selected.courseId,
+  work: selected.work,
   includeClosed: run.profiles.includes("full"),
-  sources: ["corpus.qmd", "work-one.qmd", "work-two.qmd"],
 });
 await Deno.writeTextFile(
   "public-package.json",

@@ -93,6 +93,8 @@ Deno.test("CLI keeps unknown internal exception stack", async () => {
         key: "course-a/exr-one",
         source: "tasks.qmd",
         visibility: "public",
+        statementVisibility: "restricted",
+        hasPublicSolution: false,
         answerType: "manual",
         condition: [],
         publicAnswer: [],
@@ -105,6 +107,12 @@ Deno.test("CLI keeps unknown internal exception stack", async () => {
         kind: "test",
         title: "Work",
         items: ["course-a/exr-one"],
+        assignments: {
+          "course-a/exr-one": {
+            requirement: "required",
+            workMode: "individual",
+          },
+        },
       }],
       resources: [],
     };
@@ -143,6 +151,12 @@ Deno.test("CLI emits semantic and external messages once without replacing forei
         kind: "test",
         title: "Work",
         items: ["course-a/exr-one"],
+        assignments: {
+          "course-a/exr-one": {
+            requirement: "required",
+            workMode: "individual",
+          },
+        },
       }],
       resources: [],
     };
@@ -165,6 +179,8 @@ Deno.test("CLI emits semantic and external messages once without replacing forei
         key: "course-a/exr-one",
         source: "tasks.qmd",
         visibility: "public",
+        statementVisibility: "restricted",
+        hasPublicSolution: false,
         answerType: "manual",
         condition: [],
         publicAnswer: [],

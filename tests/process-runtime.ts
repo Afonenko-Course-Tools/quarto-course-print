@@ -137,6 +137,8 @@ export async function installedCliCause() {
         key: "course-a/exr-one",
         source: "tasks.qmd",
         visibility: "public",
+        statementVisibility: "restricted",
+        hasPublicSolution: false,
         answerType: "manual",
         condition: [{
           t: "Para",
@@ -152,6 +154,12 @@ export async function installedCliCause() {
         kind: "test",
         title: "Work",
         items: ["course-a/exr-one"],
+        assignments: {
+          "course-a/exr-one": {
+            requirement: "required",
+            workMode: "individual",
+          },
+        },
       }],
       resources: [],
     };

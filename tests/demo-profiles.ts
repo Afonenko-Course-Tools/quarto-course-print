@@ -23,9 +23,6 @@ const condition = name === "print"
   ? "Объясните, почему публичные стартовые материалы не содержат эталонных решений."
   : "Объясните, почему публичный комплект студента не содержит эталонные решения.";
 const forbidden = [
-  "control.html",
-  "variant-a.html",
-  "variant-b.html",
   "Объясните границу доступа",
   condition,
   "Оцените полноту объяснения",
@@ -47,15 +44,13 @@ for (const [i, profile] of ["student", "full", "student"].entries()) {
   );
   const chapters = config.book.chapters;
   const actualOutput = resolve(bank, config.project["output-dir"] ?? "_book");
-  const expectedChapters = profile === "student"
-    ? ["index.qmd", "corpus.qmd"]
-    : [
-      "index.qmd",
-      "corpus.qmd",
-      "control.qmd",
-      "variant-a.qmd",
-      "variant-b.qmd",
-    ];
+  const expectedChapters = [
+    "index.qmd",
+    "corpus.qmd",
+    "control.qmd",
+    "variant-a.qmd",
+    "variant-b.qmd",
+  ];
   if (JSON.stringify(chapters) !== JSON.stringify(expectedChapters)) {
     failures.push(
       `${profile}: native chapters ${JSON.stringify(chapters)} instead of ${
@@ -87,14 +82,21 @@ for (const [i, profile] of ["student", "full", "student"].entries()) {
     }
   }
   if (profile === "student") {
-    for (const file of existing) {
-      if (["control.html", "variant-a.html", "variant-b.html"].includes(file)) {
-        failures.push(
-          `${profile}: full-only HTML remains in student output ${file}`,
-        );
-      }
+    if (existing.length !== 5) {
+      failures.push(
+        `student: expected five authored HTML pages, got ${existing}`,
+      );
     }
-    for (const file of ["index.html", "corpus.html", "search.json"]) {
+    for (
+      const file of [
+        "index.html",
+        "corpus.html",
+        "control.html",
+        "variant-a.html",
+        "variant-b.html",
+        "search.json",
+      ]
+    ) {
       const text = await Deno.readTextFile(join(actualOutput, file));
       for (const phrase of forbidden) {
         if (text.includes(phrase)) {

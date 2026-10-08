@@ -1,6 +1,6 @@
 ---
 assessment:
-  kind: lab
+  kind: practical
 ---
 
 # Second practice {#sec-work-two}
