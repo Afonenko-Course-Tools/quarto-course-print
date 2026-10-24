@@ -2,7 +2,7 @@
 type: documentation
 component: course-print
 status: current
-updated: 2026-10-08
+updated: 2026-10-24
 ---
 
 # Quarto Course Print
@@ -11,11 +11,14 @@ updated: 2026-10-08
 Версия определяется descriptor этого ref; код и документация устанавливаемого
 выпуска читаются из одного тега. Изменения main после выпущенного тега —
 **unreleased**. Минимум — Quarto 1.11.5 и CUE 0.17.1.
+Текущий кандидат — **0.3.1**. До публикации нового тега проверяйте полную
+локальную установку: `quarto add /absolute/path/to/quarto-course-print --no-prompt`.
+Команда с тегом ниже применяется после его публикации.
 
 Print создаёт публичный PDF из текущей native проекции Core `course-body-package-v1`. Вызывающий код использует Core `collectExport(courseRoot, {book, work, profiles})`, затем `buildBodies(result, {projectRoot, courseId, work, includeClosed:true})` и передаёт Print результат `publicPackage`. Идентификатор курса объявляется один раз в корне. Полный захват исходников включает контрольные QMD, исключённые из студенческого HTML, и не требует полной HTML-сборки.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-print@v0.3.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-print@v0.3.1 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-print/entrypoints/export.ts \
   public-package.json course-a/sec-work-one output header.json
@@ -53,3 +56,27 @@ Print помечает optional вопросы и не применяет фор
 [публичный транспорт](docs/public-body.md).
 
 [Самодостаточная демонстрация](examples/paper/README.md) содержит обычный native PDF и два варианта на основе банка.
+
+## Наблюдение дочерней команды в 0.3.1
+
+Самодостаточный фасад ABI 1 размечает только операцию `course-print.command`
+с `kind: command` и `phase: process`. Он передаёт
+`attributes.extension_id: "course-print"`; однозначного документа на этой
+границе нет, поэтому `document_id` не назначается. Это узкое наблюдение
+дочерней команды, а не полное семантическое покрытие функций Print.
+Новый общий runtime не добавляется; агент подключает внешний launcher Performance.
+
+Только активный контекст агента использует полный снимок окружения через
+`childEnv` и `clearEnv: true`, сохраняя рабочие переменные и удаляя устаревший
+`COURSE_PERF_PARENT_SPAN_ID`. При возврате исходного окружения фасадом —
+в режимах `off`, без агента или без разрешения читать режим наблюдения —
+сохраняются прежнее наследование окружения и разрешения вызова. Глобальное
+чтение env и `clearEnv` в этой ветке не добавляются. Аргументы, cwd, потоки,
+ввод и исходные причины ошибок сохраняются.
+
+Самостоятельная проверка: `deno test --no-config -A tests/performance-context.test.ts`.
+Она проверяет настоящие дочерние процессы, включая ограниченные разрешения;
+тестовый агент не становится зависимостью пакета. Полная native-проверка
+по-прежнему использует legacy Core 4.0.0 и `course-body-package-v1`. Новый
+кандидат не мигрирует Body API и не подтверждает совместимость с Core 8.2.3.
+Полный suite, CI итогового HEAD и установка нового выпуска принимаются отдельно.
