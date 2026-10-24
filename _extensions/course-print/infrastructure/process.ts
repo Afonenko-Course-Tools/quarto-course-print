@@ -1,3 +1,6 @@
+import { createMetrics } from "../observability/bridge.ts";
+const metrics = createMetrics("course-print");
+
 // External tools retain their own diagnostics; Body validation does not own them.
 function externalFailure(
   tool: string,
@@ -26,7 +29,7 @@ function externalFailure(
   error.name = "ExternalToolFailure";
   return Object.assign(error, { tool, exitCode, stdout, stderr });
 }
-export async function command(
+async function nativeCommand(
   cmd: string,
   args: string[],
   input?: string,
@@ -41,6 +44,8 @@ export async function command(
     p = new Deno.Command(cmd, {
       args,
       cwd,
+      env: metrics.childEnv(Deno.env.toObject()),
+      clearEnv: true,
       stdin: bytes === undefined ? "null" : "piped",
       stdout: "piped",
       stderr: "piped",
@@ -90,3 +95,8 @@ export async function command(
   }
   return stdout;
 }
+
+export const command = metrics.wrapAsync({
+  id: "course-print.command", kind: "command",
+  attributes: { phase: "process" },
+}, nativeCommand);
