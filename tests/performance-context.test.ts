@@ -65,3 +65,25 @@ Deno.test("optional bridge identity and actual command child environment", async
     if (previousFailures === undefined) delete registry[failures]; else registry[failures] = previousFailures;
   }
 });
+
+Deno.test("denied env and scoped off/missing agent retain native inheritance", async () => {
+  const temp = await Deno.makeTempDir({ prefix: "course-print-no-env-" });
+  try {
+    const helper = new URL("../_extensions/course-print/infrastructure/process.ts", import.meta.url).href;
+    const script = temp + "/probe.ts";
+    await Deno.writeTextFile(script, `import { command } from ${JSON.stringify(helper)};
+const result = await command("/bin/sh", ["-c", 'printf "%s|%s" "$print_PERF_INHERITED" "$COURSE_PERF_PARENT_SPAN_ID"']);
+if (result !== "native-inherited|original-parent") throw Error(result);
+console.log("native inheritance preserved");
+`);
+    for (const [mode, permission] of [["trace", "--deny-env"], ["off", "--allow-env=COURSE_PERF_MODE"], ["trace", "--allow-env=COURSE_PERF_MODE"]]) {
+      const result = await new Deno.Command(Deno.execPath(), {
+        args: ["run", "--no-config", "--no-lock", "--no-prompt", permission, "--allow-read", "--allow-run=/bin/sh", script],
+        env: { ...Deno.env.toObject(), COURSE_PERF_MODE: mode, print_PERF_INHERITED: "native-inherited", COURSE_PERF_PARENT_SPAN_ID: "original-parent" },
+        clearEnv: true, stdout: "piped", stderr: "piped",
+      }).output();
+      assert(result.success, mode + "/" + permission + ": " + new TextDecoder().decode(result.stderr));
+      assert(new TextDecoder().decode(result.stdout) === "native inheritance preserved\n", "actual native child output");
+    }
+  } finally { await Deno.remove(temp, { recursive: true }); }
+});

@@ -41,11 +41,16 @@ async function nativeCommand(
     : new TextEncoder().encode(input);
   let p: Deno.ChildProcess;
   try {
+    const base: Record<string, string> = {};
+    const context = metrics.childEnv(base);
+    const childOptions = context === base ? {} : {
+      env: metrics.childEnv(Deno.env.toObject()),
+      clearEnv: true,
+    };
     p = new Deno.Command(cmd, {
       args,
       cwd,
-      env: metrics.childEnv(Deno.env.toObject()),
-      clearEnv: true,
+      ...childOptions,
       stdin: bytes === undefined ? "null" : "piped",
       stdout: "piped",
       stderr: "piped",
