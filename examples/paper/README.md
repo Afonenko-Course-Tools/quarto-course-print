@@ -1,6 +1,6 @@
 # Печатные задания
 
-Авторская разметка текущего Git ref для `v0.3.0`.
+Авторская разметка текущего Git ref для кандидата `0.3.1` (**unreleased**).
 Общая модель принадлежит Core `v4.0.0`; минимум — Quarto 1.11.5 и CUE 0.17.1.
 [План владельца](../../docs/plans/2026-10-08-implementation.md) фиксирует
 фактические проверки и дальнейший выпуск.
@@ -11,21 +11,24 @@
 CORE=/absolute/path/to/quarto-course bash tools/check-demo.sh
 ```
 
-Установка закреплённых выпусков из каталога этой группы:
+Установка закреплённых выпусков из каталога этой группы после публикации нового тега:
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-print@v0.3.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-print@v0.3.1 --no-prompt
 cd bank
 quarto add Afonenko-Course-Tools/quarto-course@v4.0.0 --no-prompt
 cd ..
 quarto run build.ts
 ```
 
-Native source-ссылки ведут к tool tag `v0.3.0` того же producer commit.
-Готовая группа выпускается в отдельном immutable Release `demo-20261008`.
-`BUILD.json` фиксирует точный commit,
-зависимости, профиль и `sourceDirty: false` для готового asset. Tool tag и demo tag
-должны указывать на одну clean ревизию. HTML использует внешнее native действие
+Нативные ссылки на исходники текущего примера подготовлены для тега `v0.3.1`.
+До его публикации используйте локальный checkout и проверку выше; наличие команды
+установки не подтверждает существование тега или готовность нового выпуска.
+Историческая готовая группа в неизменяемом выпуске `demo-20261008` соответствует
+прежнему тегу инструмента `v0.3.0` и этим кандидатом не пересобирается.
+Её `BUILD.json` сохраняет точный commit, зависимости, профиль и
+`sourceDirty: false`; исторические теги инструмента/демонстрации и архив остаются
+неизменными. HTML использует штатное внешнее действие
 GitHub source, без source modal и копирования закрытых QMD в student output.
 
 ## Банк и два варианта

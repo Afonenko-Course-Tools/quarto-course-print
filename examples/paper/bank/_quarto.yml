@@ -9,7 +9,7 @@ project:
   resources: ["!_generated/**"]
 book:
   repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-print
-  repo-branch: v0.3.0
+  repo-branch: v0.3.1
   repo-subdir: examples/paper/bank
   repo-actions: [source]
   title: Общий банк заданий
